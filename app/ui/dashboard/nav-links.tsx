@@ -1,7 +1,6 @@
 "use client"
 
 import {
-  UserGroupIcon,
   HomeIcon,
   CurrencyPoundIcon,
   TagIcon
