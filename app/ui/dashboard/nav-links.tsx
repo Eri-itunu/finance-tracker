@@ -7,7 +7,7 @@ import {
   TagIcon
 } from '@heroicons/react/24/outline';
 import { usePathname } from 'next/navigation';
-import Link from 'next/Link'
+import Link from 'next/link'
 import clsx from 'clsx';
 // Map of links to display in the side navigation.
 // Depending on the size of the application, this would be stored in a database.
