@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1737037483595,
+      "tag": "0000_superb_shinko_yamashiro",
+      "breakpoints": true
+    }
+  ]
+}

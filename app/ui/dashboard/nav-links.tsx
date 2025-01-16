@@ -3,7 +3,9 @@
 import {
   HomeIcon,
   CurrencyPoundIcon,
-  TagIcon
+  TagIcon,
+  BanknotesIcon,
+  ChartPieIcon
 } from '@heroicons/react/24/outline';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -15,9 +17,10 @@ const links = [
   {
     name: 'Spending',
     href: '/dashboard/spending',
-    icon: CurrencyPoundIcon,
+    icon: BanknotesIcon,
   },
-  { name: 'Categories', href: '/dashboard/categories', icon: TagIcon },
+  { name: 'Savings', href: '/dashboard/savings', icon: ChartPieIcon },
+  { name: 'Income', href: '/dashboard/income', icon: CurrencyPoundIcon },
 ];
 
 export default function NavLinks() {

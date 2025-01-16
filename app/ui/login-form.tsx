@@ -5,13 +5,13 @@ export default function LoginForm(){
         <div className="rounded-lg" >
             <form  className="space-y-3">
                 <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
-                    <h1 className={`mb-3 text-2xl`}>
-                    Please log in to continue.
+                    <h1 className={`mb-3 text-2xl text-center`}>
+                        Financial tracker
                     </h1>
-                    <div className="w-full">
+                    <div className="w-full mb-4">
                     <div>
                         <label
-                        className="mb-3 mt-5 block text-xs font-medium text-gray-900"
+                        className="mb-1 mt-5 block text-xs font-medium text-gray-900"
                         htmlFor="email"
                         >
                         Email
@@ -30,7 +30,7 @@ export default function LoginForm(){
                     </div>
                     <div className="mt-4">
                         <label
-                        className="mb-3 mt-5 block text-xs font-medium text-gray-900"
+                        className="mb-1 mt-5 block text-xs font-medium text-gray-900"
                         htmlFor="password"
                         >
                         Password
@@ -49,11 +49,11 @@ export default function LoginForm(){
                         </div>
                     </div>
                     </div>
-                    <Link  href="/dashboard" className="mt-4 w-full" >
-                    Log in 
-                    </Link>
-                    <div className="flex h-8 items-end space-x-1">
                    
+                    <div className="flex h-8 items-end space-x-1">
+                        <Link  href="/dashboard" className="mt-8 w-full text-center bg-blue-500 text-white rounded-lg p-2" >
+                        Log in 
+                        </Link>
                     </div>
                 </div>
             </form>
