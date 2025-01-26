@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@next/env": "^15.1.6",
     "@remixicon/react": "^4.6.0",
     "@vercel/postgres": "^0.10.0",
     "bcrypt": "^5.1.1",
