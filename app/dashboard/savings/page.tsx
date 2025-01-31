@@ -1,9 +1,13 @@
 
+import { fetchSavings } from "@/app/lib/data"
+import { SavingsTableComponent } from "@/app/ui/dashboard/Tables";
 
-export default function Categories(){
+export default async function Categories(){
+
+    const res = await fetchSavings();
     return(
         <div>
-            This is the categories page
+           < SavingsTableComponent data={res} />
         </div>
     )
 }
