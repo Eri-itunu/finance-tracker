@@ -67,15 +67,13 @@ export default function LoginForm(){
               </div>
             </div>
 
-            <button type="submit" >
-              Log in real
-            </button>
-            <Link
-                href="/dashboard/"
+           
+            <button
+              type="submit"
                 className="flex h-10 items-center rounded-lg mt-4 bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
             >
               Log in <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
-            </Link>
+            </button>
             <div className="flex h-8 items-end space-x-1">
               {/* Add form errors here */}
               {errorMessage && (
