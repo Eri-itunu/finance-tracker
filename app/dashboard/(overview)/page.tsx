@@ -10,12 +10,18 @@ import { fetchIncome } from "../../lib/data";
 import { useState } from "react";
 import { IncomeTableComponent } from "@/app/ui/dashboard/Tables";
 import { LineChartOnValueChangeExample } from "@/app/ui/charts/LineChart";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 export default async function Page() {
+
+  const session = await auth();
+  if(!session) redirect('/')
+ 
   
   return (
     <main>
-      <h1 className={` mb-4 text-xl md:text-2xl`}>Hi, Eri</h1>
+      <h1 className={` mb-4 text-xl md:text-2xl`}>Hi, {session?.user?.name} {session?.user?.id}</h1>
       <p>This is an overview of your finances so far</p>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <CardWrapper />

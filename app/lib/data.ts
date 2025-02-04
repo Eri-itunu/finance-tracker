@@ -1,21 +1,40 @@
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import * as schema from "@/app/db/schema";
 import { eq, sum } from "drizzle-orm";
-import { formatCurrency, formatDateToLocal } from "@/lib/utils";
+import { formatCurrency, formatDateToLocal } from "@/app/lib/utils";
+import { auth } from "@/auth";
 const db = drizzle({ schema });
 
 export async function fetchIncome() {
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    throw new Error("Unauthorized: No user ID found.");
+  }
+
   try {
-    const results = await db.query.income.findMany();
+    const results = await db.query.income.findMany({
+      where: eq(schema.income.userId, Number(userId)),
+    });
+
     console.log(results);
     return results;
   } catch (error) {
-    console.log("Database Error:", error);
+    console.error("Database Error:", error);
     throw new Error("Failed to fetch user data.");
   }
 }
 
+
 export async function fetchSpending() {
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    throw new Error("Unauthorized: No user ID found.");
+  }
+
   try {
     const results = await db
       .select({
@@ -27,9 +46,13 @@ export async function fetchSpending() {
         categoryName: schema.categories.categoryName,
       })
       .from(schema.spending)
-      .innerJoin(schema.categories, eq(schema.spending.categoryId, schema.categories.id));
+      .innerJoin(
+        schema.categories,
+        eq(schema.spending.categoryId, schema.categories.id)
+      )
+      .where(eq(schema.spending.userId, Number(userId))); // 👈 Filter by user ID
 
-    console.log(results)
+    console.log(results);
     return results;
   } catch (error) {
     console.error("Database Error:", error);
@@ -37,9 +60,15 @@ export async function fetchSpending() {
   }
 }
 
-export async function fetchSavings() {
 
-  try{
+export async function fetchSavings() {
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    throw new Error("Unauthorized: No user ID found.");
+  }
+  try {
     const results = await db
       .select({
         id: schema.savingsContributions.id,
@@ -48,41 +77,64 @@ export async function fetchSavings() {
         savingsGoals: schema.savingsGoals.goalName,
       })
       .from(schema.savingsContributions)
-      .innerJoin(schema.savingsGoals, eq(schema.savingsContributions.userId, schema.savingsGoals.userId));
+      .innerJoin(
+        schema.savingsGoals,
+        eq(schema.savingsContributions.userId, schema.savingsGoals.userId)
+      )
+      .where(eq(schema.savingsContributions.userId, Number(userId))); // 👈 Filter by user ID
 
-    
     return results;
-  }catch(error){
+  } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch savings data.");
-  } 
-
+  }
 }
 
 export async function fetchCategories() {
+  const session = await auth();
+  const userId = session?.user?.id;
 
-  try{
-    const results = await db.select({
-      id: schema.categories.id,
-      userId: schema.categories.userId,
-      categoryName: schema.categories.categoryName,
-    })
-    .from(schema.categories)
+  if (!userId) {
+    throw new Error("Unauthorized: No user ID found.");
+  }
+  try {
+    const results = await db
+      .select({
+        id: schema.categories.id,
+        userId: schema.categories.userId,
+        categoryName: schema.categories.categoryName,
+      })
+      .from(schema.categories)
+      .where(eq(schema.categories.userId, Number(userId))); // 👈 Filter by user ID
     console.log(results);
     return results;
-  }catch(error){
+  } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch categories data.");
   }
-
 }
 
-export async function fetchCardData() {
 
-  try{
-    const totalSpendPromise =  db.select({ value: sum(schema.spending.amount) }).from(schema.spending);
-    const totalIncomePromise =  db.select({ value: sum(schema.income.amount) }).from(schema.income);
-    const totalSavingsPromise =  db.select({ value: sum(schema.savingsContributions.amount) }).from(schema.savingsContributions);
+export async function fetchCardData() {
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    throw new Error("Unauthorized: No user ID found.");
+  }
+  try {
+    const totalSpendPromise = db
+      .select({ value: sum(schema.spending.amount) })
+      .from(schema.spending)
+      .where(eq(schema.spending.userId, Number(userId))); // 👈 Filter by user ID
+    const totalIncomePromise = db
+      .select({ value: sum(schema.income.amount) })
+      .from(schema.income)
+      .where(eq(schema.income.userId, Number(userId))); // 👈 Filter by user ID
+    const totalSavingsPromise = db
+      .select({ value: sum(schema.savingsContributions.amount) })
+      .from(schema.savingsContributions)
+      .where(eq(schema.savingsContributions.userId, Number(userId))); // 👈 Filter by user ID
 
     const data = await Promise.all([
       totalSpendPromise,
@@ -90,14 +142,12 @@ export async function fetchCardData() {
       totalSavingsPromise,
     ]);
 
-
-    const totalSpend = Number(data[0][0].value ?? '0');
-    const totalIncome = Number(data[1][0].value ?? '0');
-    const totalSavings = Number(data[2][0].value ?? '0');
-    console.log( totalSpend , totalIncome , totalSavings);
-    return{ totalSpend , totalIncome , totalSavings};
-    
-  }catch (error) {
+    const totalSpend = Number(data[0][0].value ?? "0");
+    const totalIncome = Number(data[1][0].value ?? "0");
+    const totalSavings = Number(data[2][0].value ?? "0");
+    console.log(totalSpend, totalIncome, totalSavings);
+    return { totalSpend, totalIncome, totalSavings };
+  } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch spending data.");
   }
