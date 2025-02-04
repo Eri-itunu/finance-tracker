@@ -9,25 +9,19 @@ import {
 } from "@heroicons/react/24/outline";
 import { useActionState } from 'react'
 import { fetchCategories } from "@/app/lib/data";
-import { createCategory  } from "@/app/lib/actions";
+import { createCategory, State  } from "@/app/lib/actions";
 
 type categoriesField ={
     id: number;
     userId: number | null;
     categoryName: string;
 }
-type State = {
-    message: string;
-    errors: {
-        amount?: string[];
-        itemName?: string[];
-        categoryId?: string[];
-        notes?: string[];
-    };
-}
+
 export default  function Create({ categories, userId }: { categories: categoriesField[], userId:string }){
     const initialState: State = { message: '', errors: {} };
-    const [state, formAction] = useActionState(createCategory, initialState);
+    // const [state, formAction] = useActionState(createCategory, State);
+     const [errorMessage, formAction, isPending] = useActionState(createCategory, undefined);
+    
     //const categories = await fetchCategories();
     return(
         <>  
@@ -66,8 +60,8 @@ export default  function Create({ categories, userId }: { categories: categories
                                 
                             </div>
                             <div id="amount-error" aria-live="polite" aria-atomic="true">
-                                {state.errors?.category &&
-                                state.errors.category.map((error: string) => (
+                                {errorMessage?.errors?.category &&
+                                errorMessage?.errors.category.map((error: string) => (
                                     <p className="mt-2 text-sm text-red-500" key={error}>
                                     {error}
                                     </p>

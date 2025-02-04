@@ -102,7 +102,7 @@ export async function createSpending(prevState: State, formData: FormData) {
 
 const CreateCategory = FormSchema.omit({ date: true, amount: true, itemName:true, notes:true, categoryId:true });
 
-export async function createCategory(prevState: State, formData: FormData){
+export async function createCategory(prevState: State | undefined, formData: FormData){
 
   const validatedFields = CreateCategory.safeParse({
     category: formData.get('category'),
