@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import * as schema from "@/app/db/schema";
-import { eq, sum } from "drizzle-orm";
+import { eq, sum, or, isNull } from "drizzle-orm";
 import { formatCurrency, formatDateToLocal } from "@/app/lib/utils";
 import { auth } from "@/auth";
 const db = drizzle({ schema });
@@ -90,6 +90,7 @@ export async function fetchSavings() {
   }
 }
 
+
 export async function fetchCategories() {
   const session = await auth();
   const userId = session?.user?.id;
@@ -97,6 +98,7 @@ export async function fetchCategories() {
   if (!userId) {
     throw new Error("Unauthorized: No user ID found.");
   }
+
   try {
     const results = await db
       .select({
@@ -105,7 +107,13 @@ export async function fetchCategories() {
         categoryName: schema.categories.categoryName,
       })
       .from(schema.categories)
-      .where(eq(schema.categories.userId, Number(userId))); // 👈 Filter by user ID
+      .where(
+        or(
+          eq(schema.categories.userId, Number(userId)), // Match userId
+          isNull(schema.categories.userId) // Also include categories with NULL userId
+        )
+      );
+
     console.log(results);
     return results;
   } catch (error) {
@@ -113,6 +121,7 @@ export async function fetchCategories() {
     throw new Error("Failed to fetch categories data.");
   }
 }
+
 
 
 export async function fetchCardData() {

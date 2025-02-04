@@ -9,15 +9,24 @@ import {
 } from "@heroicons/react/24/outline";
 import { useActionState } from 'react'
 import { fetchCategories } from "@/app/lib/data";
-import { createSpending, State } from "@/app/lib/actions";
+import { createSpending,  } from "@/app/lib/actions";
 
 type categoriesField ={
     id: number;
     userId: number | null;
     categoryName: string;
 }
-export default  function Create({ categories }: { categories: categoriesField[] }){
-    const initialState: State = { message: null, errors: {} };
+type State = {
+    message: string;
+    errors: {
+        amount?: string[];
+        itemName?: string[];
+        categoryId?: string[];
+        notes?: string[];
+    };
+}
+export default  function Create({ categories, userId }: { categories: categoriesField[], userId:string }){
+    const initialState: State = { message: '', errors: {} };
     const [state, formAction] = useActionState(createSpending, initialState);
     //const categories = await fetchCategories();
     return(
@@ -25,6 +34,7 @@ export default  function Create({ categories }: { categories: categoriesField[] 
             <form action={formAction}  className="w-full  mx-auto">    
                 <div className="rounded-md bg-gray-50 p-4 md:p-6">
                     {/* Category Name */}
+                    <input type="hidden" name="userId" value={userId} />
                     <div className="mb-4">
                     <label htmlFor="category" className="mb-2 block text-sm font-medium">
                         Choose a category

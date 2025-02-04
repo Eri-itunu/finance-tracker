@@ -53,7 +53,7 @@ export const SpendingTableComponent = ({ data }: SpendingTableProps) => {
         <tbody>
           {data.map((item) => (
             <tr key={item.id} className="even:bg-gray-100">
-              <td className="border border-gray-300 px-4 py-2">{item.date}</td>
+              <td className="border border-gray-300 px-4 py-2">{formatDateToLocal(item.date)}</td>
               <td className="border border-gray-300 px-4 py-2">
                 {item.itemName}
               </td>
@@ -78,8 +78,7 @@ export const IncomeTableComponent = ({ data }: IncomeTableProps) => {
       <table className="table-auto border-collapse border border-gray-300 w-full text-sm">
         <thead className="bg-gray-200">
           <tr>
-            <th className="border border-gray-300 px-4 py-2">ID</th>
-            <th className="border border-gray-300 px-4 py-2">User ID</th>
+           
             <th className="border border-gray-300 px-4 py-2">Date</th>
             <th className="border border-gray-300 px-4 py-2">Source</th>
             <th className="border border-gray-300 px-4 py-2">Amount</th>
@@ -88,11 +87,7 @@ export const IncomeTableComponent = ({ data }: IncomeTableProps) => {
         <tbody>
           {data.map((item) => (
             <tr key={item.id} className="even:bg-gray-100">
-              <td className="border border-gray-300 px-4 py-2">{item.id}</td>
-              <td className="border border-gray-300 px-4 py-2">
-                {item.userId}
-              </td>
-              <td className="border border-gray-300 px-4 py-2">{item.date}</td>
+              <td className="border border-gray-300 px-4 py-2">{formatDateToLocal(item.date)}</td>
               <td className="border border-gray-300 px-4 py-2">
                 {item.source}
               </td>
@@ -123,7 +118,7 @@ export const SavingsTableComponent = ({ data }: SavingTableProps) => {
         <tbody>
           {data.map((item, index) => (
             <tr key={index} className="even:bg-gray-100">
-              <td className="border border-gray-300 px-4 py-2">{item.date}</td>
+              <td className="border border-gray-300 px-4 py-2">{formatDateToLocal(item.date)}</td>
               <td className="border border-gray-300 px-4 py-2">
                 {item.amount}
               </td>

@@ -17,19 +17,23 @@ export default async function Page() {
 
   const session = await auth();
   if(!session) redirect('/')
- 
-  
   return (
-    <main>
-      <h1 className={` mb-4 text-xl md:text-2xl`}>Hi, {session?.user?.name} {session?.user?.id}</h1>
+    <main className=" h-[50vh]">
+      <h1 className={` mb-4 text-xl md:text-2xl`}>Welcome, {session?.user?.name} </h1>
       <p>This is an overview of your finances so far</p>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <CardWrapper />
       </div>
 
-      <div className="w-full bg-red">
-        <LineChartOnValueChangeExample />
+      <div className="flex items-center justify-center  h-full">
+
+          <h1>Graphs and charts coming soon</h1>
+
       </div>
+
+      {/* <div className="w-full bg-red">
+        <LineChartOnValueChangeExample />
+      </div> */}
       {/* <div className="mt-6 w-full">
           <div className="flex flex-col gap-16">
             {income ? (<IncomeTableComponent data={income} />) : <RevenueChartSkeleton />}
