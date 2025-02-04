@@ -21,14 +21,20 @@ export type State = {
     itemName?: string[];
     notes?: string[];
     category?: string[],
-    email?:string[],
+  };
+  message?: string | null;
+};
+
+export type registerState = {
+  errors?: {
     firstName?:string[],
     lastName?:string[],
+    email?:string[]
     password?:string[],
     confirmPassword?: string[]
   };
   message?: string | null;
-};
+}
   
 const FormSchema = z.object({
   amount: z.coerce.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
@@ -165,7 +171,10 @@ const SignupSchema = z.object({
   path: ["confirmPassword"]
 });
 
-export async function register(prevState: State, formData: FormData) {
+export async function register(prevState: registerState | undefined, formData: FormData) {
+  // Ensure prevState is always defined
+ 
+
   // Validate input fields
   const validatedFields = SignupSchema.safeParse({
     firstName: formData.get('firstName'),
@@ -194,7 +203,7 @@ export async function register(prevState: State, formData: FormData) {
       .execute();
 
     if (existingUser.length > 0) {
-      return { errors: { email: ["User already exists"] } };
+      return {  message: "User already exists" };
     }
 
     // Hash password
@@ -208,10 +217,10 @@ export async function register(prevState: State, formData: FormData) {
       password: hashedPassword,
     }).execute();
 
-    return { message: "Registration successful" };
+    return {  message: "Registration successful" };
 
   } catch (error) {
     console.error("Error during registration:", error);
-    return { message: "Something went wrong. Please try again later." };
+    return {  message: "Something went wrong. Please try again later." };
   }
 }

@@ -8,10 +8,10 @@ import {
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 
 import { useActionState } from 'react';
-import { register } from '@/app/lib/actions';
+import { register, registerState } from '@/app/lib/actions';
 
 export default function RegisterForm() {
-  const [errorMessage, formAction, isPending] = useActionState(register, undefined);
+  const [errorMessage, formAction, isPending] = useActionState(register, {} as registerState);
 
   return (
     <form action={formAction} className="space-y-3">
