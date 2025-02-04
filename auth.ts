@@ -1,11 +1,15 @@
 import Credentials from "next-auth/providers/credentials";
-import NextAuth, { User } from "next-auth";
+import NextAuth, { User as NextAuthUser } from "next-auth";
 import { z } from "zod";
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import * as schema from "@/app/db/schema";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
 
+type User = NextAuthUser & {
+  firstName: string;
+  lastName: string;
+}
 const db = drizzle({ schema });
 
 async function getUser(email: string) {
@@ -51,16 +55,16 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.firstName = user.firstName;
-        token.lastName = user.lastName;
+        token.firstName = (user as User).firstName;
+        token.lastName = (user as User).lastName;
       }
       return token;
     },
     // Expose user data to session
     session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id;
-        session.user.name = token.firstName;
+        session.user.id = token.id as string;
+        session.user.name = token.firstName as string;
       }
       return session;
     },
