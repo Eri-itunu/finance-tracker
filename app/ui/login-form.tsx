@@ -7,7 +7,7 @@ import {
   ExclamationCircleIcon,
 } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
-
+import Link from 'next/link';
 import { useActionState } from 'react';
 import { authenticate } from '@/app/lib/actions';
 
@@ -67,6 +67,7 @@ export default function LoginForm() {
         <button className="mt-4 w-full" aria-disabled={isPending}>
           Log in <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
         </button>
+
         <div className="flex h-8 items-end space-x-1">
           {/* Add form errors here */}
           {errorMessage && (
@@ -76,7 +77,12 @@ export default function LoginForm() {
             </>
           )}
         </div>
+
+        <div className='text-center'>
+          New user? <Link href="/register"> Register now</Link>
+        </div>
       </div>
+      
     </form>
   );
 }

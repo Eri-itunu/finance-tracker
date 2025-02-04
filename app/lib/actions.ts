@@ -268,7 +268,7 @@ export async function register(prevState: registerState | undefined, formData: F
       password: hashedPassword,
     }).execute();
 
-    return {  message: "Registration successful" };
+    return {  message: "Registration successful log in now" };
 
   } catch (error) {
     console.error("Error during registration:", error);

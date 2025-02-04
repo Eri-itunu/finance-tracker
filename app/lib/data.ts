@@ -70,19 +70,21 @@ export async function fetchSavings() {
   }
   try {
     const results = await db
-      .select({
-        id: schema.savingsContributions.id,
-        date: schema.savingsContributions.date,
-        amount: schema.savingsContributions.amount,
-        savingsGoals: schema.savingsGoals.goalName,
-      })
-      .from(schema.savingsContributions)
-      .innerJoin(
-        schema.savingsGoals,
-        eq(schema.savingsContributions.userId, schema.savingsGoals.userId)
-      )
-      .where(eq(schema.savingsContributions.userId, Number(userId))); // 👈 Filter by user ID
-      console.log(results)
+    .select({
+      id: schema.savingsContributions.id,
+      date: schema.savingsContributions.date,
+      amount: schema.savingsContributions.amount,
+      savingsGoals: schema.savingsGoals.goalName,
+    })
+    .from(schema.savingsContributions)
+    .innerJoin(
+      schema.savingsGoals,
+      eq(schema.savingsContributions.goalId, schema.savingsGoals.id) // 👈 Ensure correct join condition
+    )
+    .where(eq(schema.savingsContributions.userId, Number(userId))); // 👈 Filter by user ID
+
+  console.log(results);
+
     return results;
   } catch (error) {
     console.error("Database Error:", error);

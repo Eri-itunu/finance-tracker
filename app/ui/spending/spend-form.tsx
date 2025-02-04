@@ -8,7 +8,7 @@ import {
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import { useActionState } from 'react'
-import { fetchCategories } from "@/app/lib/data";
+import { useState } from "react";
 import { createSpending,  } from "@/app/lib/actions";
 
 type categoriesField ={
@@ -28,7 +28,32 @@ type State = {
 export default  function Create({ categories, userId }: { categories: categoriesField[], userId:string }){
     const initialState: State = { message: '', errors: {} };
     const [state, formAction] = useActionState(createSpending, initialState);
-    //const categories = await fetchCategories();
+    const [formattedAmount, setFormattedAmount] = useState("");
+
+    // Function to format number with commas
+    const formatNumberWithCommas = (value: string) => {
+        // Remove non-numeric characters except decimal point
+        let num = value.replace(/[^0-9.]/g, "");
+        
+        // Ensure only one decimal point exists
+        const parts = num.split(".");
+        if (parts.length > 2) {
+            num = parts[0] + "." + parts.slice(1).join("");
+        }
+
+        // Format integer part with commas
+        const [integer, decimal] = num.split(".");
+        const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+        return decimal ? `${formattedInteger}.${decimal}` : formattedInteger;
+    };
+
+    // Handle input change
+    const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = event.target.value;
+        setFormattedAmount(formatNumberWithCommas(value));
+    };
+
     return(
         <>  
             <form action={formAction}  className="w-full  mx-auto">    
@@ -78,9 +103,10 @@ export default  function Create({ categories, userId }: { categories: categories
                                 <input
                                     id="amount"
                                     name="amount"
-                                    type="number"
-                                    step="0.01"
+                                    type="text" // Use text to prevent browser from overriding formatting
                                     placeholder="Enter Naira amount"
+                                    value={formattedAmount}
+                                    onChange={handleAmountChange}
                                     className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                                 />
                                 <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />

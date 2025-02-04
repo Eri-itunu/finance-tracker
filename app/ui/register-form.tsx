@@ -7,7 +7,7 @@ import {
   UserIcon
 } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
-
+import Link from 'next/link'
 import { useActionState } from 'react';
 import { register, registerState } from '@/app/lib/actions';
 
@@ -144,6 +144,10 @@ export default function RegisterForm() {
               <p className="text-sm text-red-500">{errorMessage.message}</p>
             </>
           )}
+        </div>
+
+        <div>
+          <Link href="/" > Log in </Link>
         </div>
       </div>
     </form>

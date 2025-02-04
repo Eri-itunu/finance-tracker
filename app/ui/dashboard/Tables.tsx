@@ -120,7 +120,7 @@ export const SavingsTableComponent = ({ data }: SavingTableProps) => {
             <tr key={index} className="even:bg-gray-100">
               <td className="border border-gray-300 px-4 py-2">{formatDateToLocal(item.date)}</td>
               <td className="border border-gray-300 px-4 py-2">
-                N{formatCurrency(Number(item.amount))}
+                {formatCurrency(Number(item.amount))}
               </td>
               <td className="border border-gray-300 px-4 py-2">
                 {item.savingsGoals}
