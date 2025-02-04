@@ -20,7 +20,8 @@ export default async function Page() {
   return (
     <main className=" h-[50vh]">
       <h1 className={` mb-4 text-xl md:text-2xl`}>Welcome, {session?.user?.name} </h1>
-      <p>This is an overview of your finances so far</p>
+      <p>This is an overview of your documented finances so far</p>
+      <p> New updates would constantly be added so please feel free to make suggestions for features you would like to have. Thank you!</p>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <CardWrapper />
       </div>

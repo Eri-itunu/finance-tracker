@@ -20,7 +20,7 @@ export default async function Income() {
             Income
           </h1>
           <div className="flex flex-col gap-16">
-            {income ? (<IncomeTableComponent data={income} />) : <RevenueChartSkeleton />}
+            {income.length > 0 ? (<IncomeTableComponent data={income} />) : 'No income data added yet'}
           </div>
         </div>
       </main>

@@ -4,6 +4,7 @@ import {
   AtSymbolIcon,
   KeyIcon,
   ExclamationCircleIcon,
+  UserIcon
 } from '@heroicons/react/24/outline';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 
@@ -32,7 +33,7 @@ export default function RegisterForm() {
               placeholder="Enter your First Name"
               required
             />
-            <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+            <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
           </div>
           {errorMessage?.errors?.firstName && (
             <p className="text-sm text-red-500">{errorMessage.errors.firstName[0]}</p>
@@ -53,7 +54,7 @@ export default function RegisterForm() {
               placeholder="Enter your Last Name"
               required
             />
-            <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+            <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
           </div>
           {errorMessage?.errors?.lastName && (
             <p className="text-sm text-red-500">{errorMessage.errors.lastName[0]}</p>

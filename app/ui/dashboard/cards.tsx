@@ -27,9 +27,9 @@ import {
       <>
      
         {/* NOTE: Uncomment this code in Chapter 9 */}
-        <Card title="Made this month" value={totalIncome} type="invoices" />
-        <Card title="Spent this month" value={totalSpend} type="collected" />
-        <Card title="Saved this month" value={totalSavings} type="pending" />
+        <Card title="Earnings documented" value={totalIncome} type="invoices" />
+        <Card title="Expenses documented" value={totalSpend} type="collected" />
+        <Card title="Savings documented" value={totalSavings} type="pending" />
        
       </>
     );

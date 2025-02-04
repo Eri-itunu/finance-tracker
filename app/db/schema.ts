@@ -47,9 +47,9 @@ export const income = pgTable("income", {
 // Savings Goals Table
 export const savingsGoals = pgTable("savings_goals", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  userId: integer("user_id").notNull().references(() => users.id),
+  userId: integer("user_id").references(() => users.id),
   goalName: varchar("goal_name", { length: 255 }).notNull(),
-  targetAmount: decimal("target_amount", { precision: 10, scale: 2 }).notNull(),
+  targetAmount: decimal("target_amount", { precision: 10, scale: 2 }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   deadline: date("deadline"),
 });

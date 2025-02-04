@@ -95,8 +95,8 @@ export async function createSpending(prevState: State, formData: FormData) {
   }
 
   // Revalidate the cache for the spending page and redirect the user.
-  revalidatePath('/dashboard/spending');
-  redirect('/dashboard/spending');
+  revalidatePath('/dashboard/expenses');
+  redirect('/dashboard/expenses');
 }
 
 
@@ -137,8 +137,59 @@ export async function createCategory(prevState: State | undefined, formData: For
   }
 
   // Revalidate the cache for the spending page and redirect the user.
-  revalidatePath('/dashboard/spending');
-  redirect('/dashboard/spending');
+  revalidatePath('/dashboard/expenses');
+  redirect('/dashboard/expenses');
+}
+
+
+const savingsSchema  = z.object({
+  amount: z.coerce.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
+    message: 'Please enter a valid amount greater than 0.',
+  }),
+  savingsId: z.coerce.number().int().positive({ message: 'Savings Goal is required.' }),
+  userId: z.string()
+  });
+export async function createSavingsCategory(prevState: State | undefined, formData: FormData){
+
+  const validatedFields = savingsSchema.safeParse({
+    amount: formData.get('amount'),
+    userId: formData.get('userId'),
+    savingsId: formData.get('savingsId')
+  });
+
+
+  // If form validation fails, return errors early. Otherwise, continue.
+  if (!validatedFields.success) {
+      console.log(validatedFields.error.flatten().fieldErrors)
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Add New Saving.',
+    };
+  }
+
+  // Prepare data for insertion into the database
+  const { amount, savingsId, userId } = validatedFields.data;
+  const amountDecimal = parseFloat(amount).toFixed(2);
+  const date = new Date().toISOString().split('T')[0];
+
+  // Insert data into the database using Drizzle ORM
+  try {
+    await db.insert(schema.savingsContributions).values({
+      userId: Number(userId),
+      goalId: Number(savingsId),
+      amount: amountDecimal,
+      date: date
+    });
+  } catch (error) {
+    // If a database error occurs, return a more specific error.
+    return {
+      message: 'Database Error: Failed to Create Savings Entry.',
+    };
+  }
+
+  // Revalidate the cache for the spending page and redirect the user.
+  revalidatePath('/dashboard/savings');
+  redirect('/dashboard/savings');
 }
 
 export async function authenticate(

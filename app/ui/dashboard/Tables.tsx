@@ -1,4 +1,4 @@
-import { formatDateToLocal } from "@/app/lib/utils";
+import { formatDateToLocal, formatCurrency } from "@/app/lib/utils";
 
 type income = {
   id: number;
@@ -61,7 +61,7 @@ export const SpendingTableComponent = ({ data }: SpendingTableProps) => {
                 {item.categoryName}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                ${item.amount}
+                N{item.amount}
               </td>
               <td className="border border-gray-300 px-4 py-2">{item.notes}</td>
             </tr>
@@ -92,7 +92,7 @@ export const IncomeTableComponent = ({ data }: IncomeTableProps) => {
                 {item.source}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                ${item.amount}
+                N{formatCurrency(Number(item.amount))}
               </td>
             </tr>
           ))}
@@ -120,7 +120,7 @@ export const SavingsTableComponent = ({ data }: SavingTableProps) => {
             <tr key={index} className="even:bg-gray-100">
               <td className="border border-gray-300 px-4 py-2">{formatDateToLocal(item.date)}</td>
               <td className="border border-gray-300 px-4 py-2">
-                {item.amount}
+                N{formatCurrency(Number(item.amount))}
               </td>
               <td className="border border-gray-300 px-4 py-2">
                 {item.savingsGoals}

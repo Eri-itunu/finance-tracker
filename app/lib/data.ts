@@ -82,7 +82,7 @@ export async function fetchSavings() {
         eq(schema.savingsContributions.userId, schema.savingsGoals.userId)
       )
       .where(eq(schema.savingsContributions.userId, Number(userId))); // 👈 Filter by user ID
-
+      console.log(results)
     return results;
   } catch (error) {
     console.error("Database Error:", error);
@@ -159,5 +159,36 @@ export async function fetchCardData() {
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch spending data.");
+  }
+}
+
+export async function fetchSavingsGoals() {
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    throw new Error("Unauthorized: No user ID found.");
+  }
+
+  try {
+    const results = await db
+      .select({
+        id: schema.savingsGoals.id,
+        userId: schema.savingsGoals.userId,
+        goalName: schema.savingsGoals.goalName,
+      })
+      .from(schema.savingsGoals)
+      .where(
+          or(
+            eq(schema.savingsGoals.userId, Number(userId)), // Match userId
+            isNull(schema.savingsGoals.userId) // Also include categories with NULL userId
+          )
+      );
+
+    console.log(results);
+    return results;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch savings goals data.");
   }
 }
