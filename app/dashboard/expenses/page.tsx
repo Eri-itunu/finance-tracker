@@ -6,10 +6,10 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
 export default async function Expenses(){
-
+  const session = await auth();
+  if(!session) redirect('/')
   const spending = await fetchSpending();
-     const session = await auth();
-      if(!session) redirect('/')
+
     return(
         <>
           <div className="flex justify-end gap-4">

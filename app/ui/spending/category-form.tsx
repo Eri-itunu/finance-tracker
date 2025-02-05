@@ -31,11 +31,12 @@ export default  function Create({ categories, userId }: { categories: categories
                         These are the current categories available to you
                     </label>
                    
+                    <ul className="list-disc pl-5" >
                         {categories.map((category) => (
-                            <ul key={category.id}>
-                            <li>{category.categoryName}</li>
-                            </ul>
+                            <li key={category.id}>{category.categoryName}</li>
                         ))}
+                    </ul>
+
                        
                     
                     </div>

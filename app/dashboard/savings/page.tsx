@@ -5,7 +5,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
-
+import {DonutChartLabelExample} from '@/app/ui/savings/savings-charts'
 
 export default async function Savings(){
     const session = await auth();
@@ -28,6 +28,10 @@ export default async function Savings(){
             </div>
             <div>
                 <h1 className="text-2xl font-bold">Savings</h1>
+            </div>
+
+            <div>
+                <DonutChartLabelExample />
             </div>
             {savings.length>0 ? ( < SavingsTableComponent data={savings} />) : 
               <div>

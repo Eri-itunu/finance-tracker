@@ -13,6 +13,9 @@ import bcrypt from "bcrypt";
 const db = drizzle({ schema });
 ;
 
+function parseAmount(amount: string): number {
+  return parseFloat(amount.replace(/,/g, "")); // Remove commas and convert to float
+}
 
 export type State = {
   errors?: {
@@ -37,7 +40,7 @@ export type registerState = {
 }
   
 const FormSchema = z.object({
-  amount: z.coerce.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
+  amount: z.coerce.string().refine((val) => !isNaN(parseAmount(val)) && parseAmount(val) > 0, {
      message: 'Please enter a valid amount greater than 0.',
    }),
   itemName: z.string().min(1, { message: 'Item name is required.' }),
@@ -75,7 +78,7 @@ export async function createSpending(prevState: State, formData: FormData) {
   // Prepare data for insertion into the database
   const { amount, itemName, categoryId, notes, userId } = validatedFields.data;
   const date = new Date().toISOString().split('T')[0];
-  const amountDecimal = parseFloat(amount).toFixed(2);
+  const amountDecimal = parseAmount(amount).toFixed(2);
 
   // Insert data into the database using Drizzle ORM
   try {
@@ -143,7 +146,7 @@ export async function createCategory(prevState: State | undefined, formData: For
 
 
 const savingsSchema  = z.object({
-  amount: z.coerce.string().refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
+  amount: z.coerce.string().refine((val) => !isNaN(parseAmount(val)) && parseAmount(val) > 0, {
     message: 'Please enter a valid amount greater than 0.',
   }),
   savingsId: z.coerce.number().int().positive({ message: 'Savings Goal is required.' }),
@@ -169,7 +172,7 @@ export async function createSavingsCategory(prevState: State | undefined, formDa
 
   // Prepare data for insertion into the database
   const { amount, savingsId, userId } = validatedFields.data;
-  const amountDecimal = parseFloat(amount).toFixed(2);
+  const amountDecimal = parseAmount(amount).toFixed(2);
   const date = new Date().toISOString().split('T')[0];
 
   // Insert data into the database using Drizzle ORM
@@ -191,6 +194,61 @@ export async function createSavingsCategory(prevState: State | undefined, formDa
   revalidatePath('/dashboard/savings');
   redirect('/dashboard/savings');
 }
+
+const incomeSchema  = z.object({
+  amount: z.coerce.string().refine((val) => !isNaN(parseAmount(val)) && parseAmount(val) > 0, {
+    message: 'Please enter a valid amount greater than 0.',
+  }),
+ source: z.string().min(1, { message: 'Item name is required.' }),
+  userId: z.string()
+  });
+
+export async function createIncomeEntry(prevState: State | undefined, formData: FormData){
+
+  const validatedFields = incomeSchema.safeParse({
+    amount: formData.get('amount'),
+    userId: formData.get('userId'),
+    source: formData.get('source')
+  });
+
+
+  // If form validation fails, return errors early. Otherwise, continue.
+  if (!validatedFields.success) {
+      console.log(validatedFields.error.flatten().fieldErrors)
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Add New Income.',
+    };
+  }
+
+  // Prepare data for insertion into the database
+  const { amount, source, userId } = validatedFields.data;
+  const amountDecimal = parseAmount(amount).toFixed(2);
+  const date = new Date().toISOString().split('T')[0];
+
+
+  // Insert data into the database using Drizzle ORM
+  try {
+    await db.insert(schema.income).values({
+      userId: Number(userId),
+      source: source,
+      amount: amountDecimal,
+      type: 'One-off',
+      date: date
+    });
+  } catch (error) {
+    // If a database error occurs, return a more specific error.
+    return {
+      message: 'Database Error: Failed to Create Income Entry.',
+    };
+  }
+
+  // Revalidate the cache for the spending page and redirect the user.
+  revalidatePath('/dashboard/income');
+  redirect('/dashboard/income');
+}
+
+
 
 export async function authenticate(
   prevState: string | undefined,
