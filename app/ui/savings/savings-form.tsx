@@ -47,7 +47,7 @@ export default  function Create({ savings, userId }: { savings: savingsGoals[], 
                         aria-describedby="savingsgoal-error"
                         >
                         <option value="" disabled>
-                            Select a categrory
+                            Select a category
                         </option>
                         {savings.map((savings) => (
                             <option key={savings.id} value={savings.id}>

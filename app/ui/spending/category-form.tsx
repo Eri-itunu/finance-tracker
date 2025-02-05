@@ -32,9 +32,9 @@ export default  function Create({ categories, userId }: { categories: categories
                     </label>
                    
                         {categories.map((category) => (
-                            <div key={category.id}>
-                            {category.categoryName}
-                            </div>
+                            <ul key={category.id}>
+                            <li>{category.categoryName}</li>
+                            </ul>
                         ))}
                        
                     

@@ -9,8 +9,9 @@ import { redirect } from "next/navigation";
 export default async function Page() {
   const savingsGoals = await fetchSavingsGoals();
   const session = await auth();
-  const userId = session?.user?.id
   if(!session) redirect('/')
+  const userId = session?.user?.id
+  
   return (
     <main>
    

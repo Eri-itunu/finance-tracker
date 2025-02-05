@@ -73,7 +73,7 @@ export default  function Create({ categories, userId }: { categories: categories
                         aria-describedby="customer-error"
                         >
                         <option value="" disabled>
-                            Select a categrory
+                            Select a category
                         </option>
                         {categories.map((category) => (
                             <option key={category.id} value={category.id}>
