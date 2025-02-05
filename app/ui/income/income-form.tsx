@@ -9,7 +9,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useActionState } from 'react'
 import { createIncomeEntry,  } from "@/app/lib/actions";
-import { useState, useEffect, ref, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type savingsGoals ={
     id: number;
