@@ -61,7 +61,7 @@ export const SpendingTableComponent = ({ data }: SpendingTableProps) => {
                 {item.categoryName}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                N{item.amount}
+              {formatCurrency(Number(item.amount))}
               </td>
               <td className="border border-gray-300 px-4 py-2">{item.notes}</td>
             </tr>

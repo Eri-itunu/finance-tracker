@@ -45,7 +45,7 @@ const FormSchema = z.object({
    }),
   itemName: z.string().min(1, { message: 'Item name is required.' }),
   categoryId: z.coerce.number().int().positive({ message: 'Category ID is required.' }),
-  notes: z.string().min(1, { message: "Notes needed" }).max(255, { message: "Notes must be at most 255 characters" }),
+  notes: z.string().max(255, { message: "Notes must be at most 255 characters" }).optional(),
   date: z.string(),
   category: z.string().min(1, { message: 'Category name is required.' }),
   userId: z.string()

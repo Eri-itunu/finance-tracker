@@ -28,7 +28,7 @@ export default  function Create({  userId }: {  userId:string }){
     const initialState: State = { message: '', errors: {} };
     const [state, formAction] = useActionState(createIncomeEntry, initialState);
     const [formattedAmount, setFormattedAmount] = useState("");
-  const amountRef = useRef<HTMLInputElement>(null);
+    const amountRef = useRef<HTMLInputElement>(null);
 
   // Function to format numbers with commas
   const formatNumberWithCommas = (value: string) => {
