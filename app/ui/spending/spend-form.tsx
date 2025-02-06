@@ -27,7 +27,7 @@ type State = {
 }
 export default  function Create({ categories, userId }: { categories: categoriesField[], userId:string }){
     const initialState: State = { message: '', errors: {} };
-    const [state, formAction] = useActionState(createSpending, initialState);
+    const [state, formAction, pending] = useActionState(createSpending, initialState);
     const [formattedAmount, setFormattedAmount] = useState("");
 
     // Function to format number with commas
@@ -153,7 +153,7 @@ export default  function Create({ categories, userId }: { categories: categories
 
                     <div className="mb-4">
                         <label htmlFor="notes" className="mb-2 block text-sm font-medium">
-                            Add notes
+                            Add notes (optional)
                         </label>
                         <div className="relative mt-2 rounded-md">
                             <div className="relative">
@@ -186,7 +186,10 @@ export default  function Create({ categories, userId }: { categories: categories
                     >
                     Cancel
                     </Link>
-                    <button type="submit">Add Expense</button>
+                    <button disabled={pending} type="submit">
+                        
+                        {pending ? "Adding Expense..." : "Add Expense"}
+                    </button>
                 </div>
             </form>
         </>

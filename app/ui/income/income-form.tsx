@@ -26,7 +26,7 @@ type State = {
 }
 export default  function Create({  userId }: {  userId:string }){
     const initialState: State = { message: '', errors: {} };
-    const [state, formAction] = useActionState(createIncomeEntry, initialState);
+    const [state, formAction, isPending] = useActionState(createIncomeEntry, initialState);
     const [formattedAmount, setFormattedAmount] = useState("");
     const amountRef = useRef<HTMLInputElement>(null);
 
@@ -133,7 +133,10 @@ export default  function Create({  userId }: {  userId:string }){
                     >
                     Cancel
                     </Link>
-                    <button type="submit">Add Income</button>
+                    <button aria-disabled={isPending} type="submit">
+                        Add Income
+                        {isPending ?  'Adding Income....' :  'Add Income'}
+                    </button>
                 </div>
             </form>
         </>

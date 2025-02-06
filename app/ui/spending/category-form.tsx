@@ -80,7 +80,10 @@ export default  function Create({ categories, userId }: { categories: categories
                     >
                     Cancel
                     </Link>
-                    <button type="submit">Add New Category</button>
+                    <button aria-disabled={isPending} type="submit">
+                        
+                        {isPending ? "Adding Category..." : " Add New Category"}
+                    </button>
                 </div>
             </form>
         </>

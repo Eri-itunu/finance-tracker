@@ -26,7 +26,7 @@ type State = {
 }
 export default  function Create({ savings, userId }: { savings: savingsGoals[], userId:string }){
     const initialState: State = { message: '', errors: {} };
-    const [state, formAction] = useActionState(createSavingsCategory, initialState);
+    const [state, formAction, pending] = useActionState(createSavingsCategory, initialState);
     //const categories = await fetchCategories();
     return(
         <>  
@@ -108,7 +108,10 @@ export default  function Create({ savings, userId }: { savings: savingsGoals[], 
                     >
                     Cancel
                     </Link>
-                    <button type="submit">Add Expense</button>
+                    <button aria-disabled={pending} type="submit">
+                        
+                        {pending ? 'Adding Expense... ' : 'Add Expense'}
+                    </button>
                 </div>
             </form>
         </>
