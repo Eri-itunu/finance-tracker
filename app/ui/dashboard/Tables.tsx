@@ -1,4 +1,7 @@
+'use client'
 import { formatDateToLocal, formatCurrency } from "@/app/lib/utils";
+import { TrashIcon } from '@heroicons/react/20/solid';
+import { deleteSpend } from "@/app/lib/data";
 
 type income = {
   id: number;
@@ -37,6 +40,7 @@ type SavingTableProps = {
   data: saving[];
 };
 
+
 export const SpendingTableComponent = ({ data }: SpendingTableProps) => {
   return (
     <div className="overflow-x-auto">
@@ -48,6 +52,8 @@ export const SpendingTableComponent = ({ data }: SpendingTableProps) => {
             <th className="border border-gray-300 px-4 py-2">Category</th>
             <th className="border border-gray-300 px-4 py-2">Amount</th>
             <th className="border border-gray-300 px-4 py-2">Notes</th>
+            <th className="border border-gray-300 px-4 py-2">Action</th>
+
           </tr>
         </thead>
         <tbody>
@@ -64,6 +70,12 @@ export const SpendingTableComponent = ({ data }: SpendingTableProps) => {
               {formatCurrency(Number(item.amount))}
               </td>
               <td className="border border-gray-300 px-4 py-2">{item.notes}</td>
+              <td className="border border-gray-300 px-4 py-2 flex justify-center">
+                <button  >
+                  <TrashIcon className="ml-auto h-5 w-5 text-red-500" />
+                </button>
+              </td>
+
             </tr>
           ))}
         </tbody>

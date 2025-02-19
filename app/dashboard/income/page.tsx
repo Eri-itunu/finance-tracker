@@ -2,17 +2,25 @@
 
 import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { RevenueChartSkeleton,} from '@/app/ui/skeletons'; 
-import { fetchIncome } from '@/app/lib/data';
+import { fetchIncome, fetchIncomePages } from '@/app/lib/data';
 import { useState } from 'react';
 import {IncomeTableComponent} from '@/app/ui/dashboard/Tables';
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from 'next/link';
 
-export default async function Income() {
+export default async function Income(props: {
+  searchParams?: Promise<{
+    page?: string;
+  }>;
+})  {
   const session = await auth();
   if(!session) redirect('/')
-  const income = await fetchIncome();
+
+  const searchParams = await props.searchParams;
+  const currentPage = Number(searchParams?.page) || 1;
+  const totalPages = await fetchIncomePages();
+  const income = await fetchIncome(currentPage);
     return (
       <main>
         <div className="mt-6 w-full">

@@ -1,14 +1,23 @@
 import Link from "next/link";
-import {fetchSpending} from "@/app/lib/data";
+import {fetchSpending, fetchSpendingPages} from "@/app/lib/data";
 import {SpendingTableComponent} from "@/app/ui/dashboard/Tables";
 import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import Pagination from "@/app/ui/pagination";
 
-export default async function Expenses(){
+export default async function Expenses(props: {
+  searchParams?: Promise<{
+    page?: string;
+  }>;
+}) {
   const session = await auth();
   if(!session) redirect('/')
-  const spending = await fetchSpending();
+
+  const searchParams = await props.searchParams;
+  const currentPage = Number(searchParams?.page) || 1;
+  const totalPages = await fetchSpendingPages();
+  const spending = await fetchSpending(currentPage);
 
     return(
         <>
@@ -37,6 +46,8 @@ export default async function Expenses(){
                     </div>
                   }
                 </div>
+
+                <Pagination totalPages={totalPages}  />
               </div>
             </div>
             

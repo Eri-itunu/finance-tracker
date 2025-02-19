@@ -1,11 +1,13 @@
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import * as schema from "@/app/db/schema";
-import { eq, sum, or, isNull } from "drizzle-orm";
+import { eq, sum, or, isNull, and } from "drizzle-orm";
 import { formatCurrency, formatDateToLocal } from "@/app/lib/utils";
 import { auth } from "@/auth";
+import { revalidatePath } from "next/cache";
 const db = drizzle({ schema });
 
-export async function fetchIncome() {
+const ITEMS_PER_PAGE = 6;
+export async function fetchIncome(currentPage: number) {
   const session = await auth();
   const userId = session?.user?.id;
 
@@ -13,8 +15,12 @@ export async function fetchIncome() {
     throw new Error("Unauthorized: No user ID found.");
   }
 
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
   try {
     const results = await db.query.income.findMany({
+      limit: ITEMS_PER_PAGE,
+	    offset: offset,
       where: eq(schema.income.userId, Number(userId)),
     });
 
@@ -26,10 +32,32 @@ export async function fetchIncome() {
   }
 }
 
-
-export async function fetchSpending() {
+export async function fetchIncomePages(){
   const session = await auth();
   const userId = session?.user?.id;
+
+  if (!userId) {
+    throw new Error("Unauthorized: No user ID found.");
+  }
+  try {
+    const results = await db.query.income.findMany({
+      where: eq(schema.income.userId, Number(userId)),
+    });
+
+    const totalPages = Math.ceil(Number(results.length) / ITEMS_PER_PAGE);
+    return totalPages;
+
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch user data.");
+  }
+}
+
+
+export async function fetchSpending(currentPage:number) {
+  const session = await auth();
+  const userId = session?.user?.id;
+  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
   if (!userId) {
     throw new Error("Unauthorized: No user ID found.");
@@ -50,7 +78,7 @@ export async function fetchSpending() {
         schema.categories,
         eq(schema.spending.categoryId, schema.categories.id)
       )
-      .where(eq(schema.spending.userId, Number(userId))); // 👈 Filter by user ID
+      .where(eq(schema.spending.userId, Number(userId))).limit(ITEMS_PER_PAGE).offset(offset); // 👈 Filter by user ID
 
     console.log(results);
     return results;
@@ -58,6 +86,27 @@ export async function fetchSpending() {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch spending data.");
   }
+}
+
+export async function fetchSpendingPages() {
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    throw new Error("Unauthorized: No user ID found.");
+  }
+  try {
+    const results = await db.query.spending.findMany({
+      where: eq(schema.spending.userId, Number(userId)),
+    });
+
+    const totalPages = Math.ceil(Number(results.length) / ITEMS_PER_PAGE);
+    return totalPages;
+
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch user data.");
+  }  
 }
 
 
@@ -193,4 +242,30 @@ export async function fetchSavingsGoals() {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch savings goals data.");
   }
+}
+
+export async function deleteSpend (id:number){
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    throw new Error("Unauthorized: No user ID found.");
+  }
+
+  try {
+    const results = await db.update(schema.spending)
+    .set({ isDeleted: true })
+    .where(
+      and(
+        eq(schema.spending.userId, Number(userId)),
+        eq(schema.spending.id, id)
+      )
+    );
+
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to delete spending data.");
+  }
+
+  revalidatePath('/dashboard/expenses');
 }

@@ -1,4 +1,4 @@
-import { pgTable, varchar, uuid, text, decimal,integer, timestamp, date } from "drizzle-orm/pg-core";
+import { pgTable, varchar, uuid, text, decimal, integer, timestamp, date, boolean as pgBoolean } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
 //generating unique ids function
@@ -32,6 +32,7 @@ export const spending = pgTable("spending", {
   itemName: varchar("item_name", { length: 255 }).notNull(),
   amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
   notes: text("notes"),
+  isDeleted: pgBoolean("is_deleted").default(false).notNull(),
 });
 
 // Income Table
@@ -68,4 +69,5 @@ export const categories = pgTable("categories", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   userId: integer("user_id").references(() => users.id), // Null for default categories
   categoryName: varchar("category_name", { length: 255 }).notNull(),
+  isDeleted: pgBoolean("is_deleted").default(false).notNull(),
 });
