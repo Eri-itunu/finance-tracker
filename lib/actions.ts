@@ -11,7 +11,7 @@ import { eq } from "drizzle-orm";
 import { auth } from "@/auth";
 import bcrypt from "bcrypt";
 const db = drizzle({ schema });
-;
+const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
 function parseAmount(amount: string): number {
   return parseFloat(amount.replace(/,/g, "")); // Remove commas and convert to float
@@ -23,6 +23,7 @@ export type State = {
     categoryId?: string[];
     itemName?: string[];
     notes?: string[];
+    date?: string[];
     category?: string[],
   };
   message?: string | null;
@@ -46,12 +47,17 @@ const FormSchema = z.object({
   itemName: z.string().min(1, { message: 'Item name is required.' }),
   categoryId: z.coerce.number().int().positive({ message: 'Category ID is required.' }),
   notes: z.string().max(255, { message: "Notes must be at most 255 characters" }).optional(),
-  date: z.string(),
+  date: z
+    .string()
+    .regex(dateRegex, "Invalid date format. Use YYYY-MM-DD.")
+    .refine((date) => !isNaN(Date.parse(date)), {
+      message: "Invalid date. Ensure it's a real date.",
+    }),
   category: z.string().min(1, { message: 'Category name is required.' }),
   userId: z.string()
 });
   
-const CreateSpending = FormSchema.omit({ date: true, category:true });
+const CreateSpending = FormSchema.omit({ category:true });
   
 export async function createSpending(prevState: State, formData: FormData) {
 
@@ -62,7 +68,8 @@ export async function createSpending(prevState: State, formData: FormData) {
     itemName: formData.get('itemName'),
     categoryId: formData.get('categoryId'),
     notes: formData.get('notes'),
-    userId: formData.get('userId')
+    userId: formData.get('userId'),
+    date: formData.get('date')
   });
 
 
@@ -76,8 +83,8 @@ export async function createSpending(prevState: State, formData: FormData) {
   }
 
   // Prepare data for insertion into the database
-  const { amount, itemName, categoryId, notes, userId } = validatedFields.data;
-  const date = new Date().toISOString().split('T')[0];
+  const { amount, itemName, categoryId, notes, userId, date } = validatedFields.data;
+  // const date = new Date().toISOString().split('T')[0];
   const amountDecimal = parseAmount(amount).toFixed(2);
 
   // Insert data into the database using Drizzle ORM

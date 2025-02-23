@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import * as schema from "@/app/db/schema";
-import { eq, sum, or, isNull, and } from "drizzle-orm";
-import { formatCurrency, formatDateToLocal } from "@/app/lib/utils";
+import { eq, sum, or, isNull, and, desc, sql } from "drizzle-orm";
+import { formatCurrency, formatDateToLocal } from "@/lib/utils";
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 const db = drizzle({ schema });
@@ -20,7 +20,7 @@ export async function fetchIncome(currentPage: number) {
   try {
     const results = await db.query.income.findMany({
       limit: ITEMS_PER_PAGE,
-	    offset: offset,
+      offset: offset,
       where: eq(schema.income.userId, Number(userId)),
     });
 
@@ -32,7 +32,7 @@ export async function fetchIncome(currentPage: number) {
   }
 }
 
-export async function fetchIncomePages(){
+export async function fetchIncomePages() {
   const session = await auth();
   const userId = session?.user?.id;
 
@@ -46,15 +46,13 @@ export async function fetchIncomePages(){
 
     const totalPages = Math.ceil(Number(results.length) / ITEMS_PER_PAGE);
     return totalPages;
-
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch user data.");
   }
 }
 
-
-export async function fetchSpending(currentPage:number) {
+export async function fetchSpending(currentPage: number) {
   const session = await auth();
   const userId = session?.user?.id;
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -78,9 +76,11 @@ export async function fetchSpending(currentPage:number) {
         schema.categories,
         eq(schema.spending.categoryId, schema.categories.id)
       )
-      .where(eq(schema.spending.userId, Number(userId))).limit(ITEMS_PER_PAGE).offset(offset); // 👈 Filter by user ID
+      .where(eq(schema.spending.userId, Number(userId)))
+      .limit(ITEMS_PER_PAGE)
+      .offset(offset)
+      .orderBy(desc(schema.spending.date));
 
-    console.log(results);
     return results;
   } catch (error) {
     console.error("Database Error:", error);
@@ -100,15 +100,27 @@ export async function fetchSpendingPages() {
       where: eq(schema.spending.userId, Number(userId)),
     });
 
-    const totalPages = Math.ceil(Number(results.length) / ITEMS_PER_PAGE);
-    return totalPages;
+    const charts = await db
+      .select({
+        categoryName: schema.categories.categoryName,
+        totalAmount: sql<number>`SUM(${schema.spending.amount})`, // Sum of amounts per category
+      })
+      .from(schema.spending)
+      .innerJoin(
+        schema.categories,
+        eq(schema.spending.categoryId, schema.categories.id)
+      )
+      .where(eq(schema.spending.userId, Number(userId)))
+      .groupBy(schema.categories.categoryName); // Group by category
 
+    const totalPages = Math.ceil(Number(results.length) / ITEMS_PER_PAGE);
+    console.log("theses are the resulta", charts);
+    return { charts, totalPages };
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch user data.");
-  }  
+  }
 }
-
 
 export async function fetchSavings() {
   const session = await auth();
@@ -119,20 +131,20 @@ export async function fetchSavings() {
   }
   try {
     const results = await db
-    .select({
-      id: schema.savingsContributions.id,
-      date: schema.savingsContributions.date,
-      amount: schema.savingsContributions.amount,
-      savingsGoals: schema.savingsGoals.goalName,
-    })
-    .from(schema.savingsContributions)
-    .innerJoin(
-      schema.savingsGoals,
-      eq(schema.savingsContributions.goalId, schema.savingsGoals.id) // 👈 Ensure correct join condition
-    )
-    .where(eq(schema.savingsContributions.userId, Number(userId))); // 👈 Filter by user ID
+      .select({
+        id: schema.savingsContributions.id,
+        date: schema.savingsContributions.date,
+        amount: schema.savingsContributions.amount,
+        savingsGoals: schema.savingsGoals.goalName,
+      })
+      .from(schema.savingsContributions)
+      .innerJoin(
+        schema.savingsGoals,
+        eq(schema.savingsContributions.goalId, schema.savingsGoals.id) // 👈 Ensure correct join condition
+      )
+      .where(eq(schema.savingsContributions.userId, Number(userId))); // 👈 Filter by user ID
 
-  console.log(results);
+    console.log(results);
 
     return results;
   } catch (error) {
@@ -140,7 +152,6 @@ export async function fetchSavings() {
     throw new Error("Failed to fetch savings data.");
   }
 }
-
 
 export async function fetchCategories() {
   const session = await auth();
@@ -172,8 +183,6 @@ export async function fetchCategories() {
     throw new Error("Failed to fetch categories data.");
   }
 }
-
-
 
 export async function fetchCardData() {
   const session = await auth();
@@ -230,10 +239,10 @@ export async function fetchSavingsGoals() {
       })
       .from(schema.savingsGoals)
       .where(
-          or(
-            eq(schema.savingsGoals.userId, Number(userId)), // Match userId
-            isNull(schema.savingsGoals.userId) // Also include categories with NULL userId
-          )
+        or(
+          eq(schema.savingsGoals.userId, Number(userId)), // Match userId
+          isNull(schema.savingsGoals.userId) // Also include categories with NULL userId
+        )
       );
 
     console.log(results);
@@ -244,7 +253,7 @@ export async function fetchSavingsGoals() {
   }
 }
 
-export async function deleteSpend (id:number){
+export async function deleteSpend(id: number) {
   const session = await auth();
   const userId = session?.user?.id;
 
@@ -253,19 +262,45 @@ export async function deleteSpend (id:number){
   }
 
   try {
-    const results = await db.update(schema.spending)
-    .set({ isDeleted: true })
-    .where(
-      and(
-        eq(schema.spending.userId, Number(userId)),
-        eq(schema.spending.id, id)
-      )
-    );
-
+    const results = await db
+      .update(schema.spending)
+      .set({ isDeleted: true })
+      .where(
+        and(
+          eq(schema.spending.userId, Number(userId)),
+          eq(schema.spending.id, id)
+        )
+      );
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to delete spending data.");
   }
 
-  revalidatePath('/dashboard/expenses');
+  revalidatePath("/dashboard/expenses");
+}
+
+export async function deleteCategory(id: number) {
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    throw new Error("Unauthorized: No user ID found.");
+  }
+
+  try {
+    const results = await db
+      .update(schema.categories)
+      .set({ isDeleted: true })
+      .where(
+        and(
+          eq(schema.categories.userId, Number(userId)),
+          eq(schema.categories.id, id)
+        )
+      );
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to delete spending data.");
+  }
+
+  revalidatePath("/dashboard/expenses");
 }

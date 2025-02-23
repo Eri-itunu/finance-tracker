@@ -2,46 +2,33 @@
 
 import { DonutChart } from "@/app/ui/charts/DonutChart"
 
-const chartdata = [
-  {
-    name: "SolarCells",
-    amount: 4890,
-  },
-  {
-    name: "Glass",
-    amount: 2103,
-  },
-  {
-    name: "JunctionBox",
-    amount: 2050,
-  },
-  {
-    name: "Adhesive",
-    amount: 1300,
-  },
-  {
-    name: "BackSheet",
-    amount: 1100,
-  },
-  {
-    name: "Frame",
-    amount: 700,
-  },
-  {
-    name: "Encapsulant",
-    amount: 200,
-  },
-]
 
-export const DonutChartLabelExample = () => (
-  <DonutChart
-    className="mx-auto"
-    data={chartdata}
-    category="name"
-    value="amount"
-    showLabel={true}
-    valueFormatter={(number: number) =>
-      `$${Intl.NumberFormat("us").format(number).toString()}`
-    }
-  />
-)
+type saving = {
+  id: number;
+  date: string;
+  amount: string;
+  savingsGoals: string;
+};
+
+type SavingChartProps = {
+  data: saving[];
+};
+export const DonutChartLabelExample = ({ data }: SavingChartProps) => {
+  const formattedData = data.map((item) => ({
+    ...item,
+    amount: Number(item.amount), // Convert amount to number
+  }));
+
+  return (
+    <DonutChart
+      className="mx-auto"
+      data={formattedData}
+      category="savingsGoals"
+      value="amount"
+      showLabel={true}
+      valueFormatter={(number: number) =>
+        `$${Intl.NumberFormat("us").format(number).toString()}`
+      }
+    />
+  );
+};

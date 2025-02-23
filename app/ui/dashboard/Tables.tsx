@@ -1,7 +1,7 @@
-'use client'
-import { formatDateToLocal, formatCurrency } from "@/app/lib/utils";
-import { TrashIcon } from '@heroicons/react/20/solid';
-import { deleteSpend } from "@/app/lib/data";
+"use client";
+import { formatDateToLocal, formatCurrency } from "@/lib/utils";
+import { TrashIcon } from "@heroicons/react/20/solid";
+import { deleteSpend } from "@/lib/data";
 
 type income = {
   id: number;
@@ -40,7 +40,6 @@ type SavingTableProps = {
   data: saving[];
 };
 
-
 export const SpendingTableComponent = ({ data }: SpendingTableProps) => {
   return (
     <div className="overflow-x-auto">
@@ -51,15 +50,14 @@ export const SpendingTableComponent = ({ data }: SpendingTableProps) => {
             <th className="border border-gray-300 px-4 py-2">Item Name</th>
             <th className="border border-gray-300 px-4 py-2">Category</th>
             <th className="border border-gray-300 px-4 py-2">Amount</th>
-            <th className="border border-gray-300 px-4 py-2">Notes</th>
-            <th className="border border-gray-300 px-4 py-2">Action</th>
-
           </tr>
         </thead>
         <tbody>
           {data.map((item) => (
             <tr key={item.id} className="even:bg-gray-100">
-              <td className="border border-gray-300 px-4 py-2">{formatDateToLocal(item.date)}</td>
+              <td className="border border-gray-300 px-4 py-2">
+                {formatDateToLocal(item.date)}
+              </td>
               <td className="border border-gray-300 px-4 py-2">
                 {item.itemName}
               </td>
@@ -67,15 +65,8 @@ export const SpendingTableComponent = ({ data }: SpendingTableProps) => {
                 {item.categoryName}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-              {formatCurrency(Number(item.amount))}
+                {formatCurrency(Number(item.amount))}
               </td>
-              <td className="border border-gray-300 px-4 py-2">{item.notes}</td>
-              <td className="border border-gray-300 px-4 py-2 flex justify-center">
-                <button  >
-                  <TrashIcon className="ml-auto h-5 w-5 text-red-500" />
-                </button>
-              </td>
-
             </tr>
           ))}
         </tbody>
@@ -90,7 +81,6 @@ export const IncomeTableComponent = ({ data }: IncomeTableProps) => {
       <table className="table-auto border-collapse border border-gray-300 w-full text-sm">
         <thead className="bg-gray-200">
           <tr>
-           
             <th className="border border-gray-300 px-4 py-2">Date</th>
             <th className="border border-gray-300 px-4 py-2">Source</th>
             <th className="border border-gray-300 px-4 py-2">Amount</th>
@@ -99,7 +89,9 @@ export const IncomeTableComponent = ({ data }: IncomeTableProps) => {
         <tbody>
           {data.map((item) => (
             <tr key={item.id} className="even:bg-gray-100">
-              <td className="border border-gray-300 px-4 py-2">{formatDateToLocal(item.date)}</td>
+              <td className="border border-gray-300 px-4 py-2">
+                {formatDateToLocal(item.date)}
+              </td>
               <td className="border border-gray-300 px-4 py-2">
                 {item.source}
               </td>
@@ -130,7 +122,9 @@ export const SavingsTableComponent = ({ data }: SavingTableProps) => {
         <tbody>
           {data.map((item, index) => (
             <tr key={index} className="even:bg-gray-100">
-              <td className="border border-gray-300 px-4 py-2">{formatDateToLocal(item.date)}</td>
+              <td className="border border-gray-300 px-4 py-2">
+                {formatDateToLocal(item.date)}
+              </td>
               <td className="border border-gray-300 px-4 py-2">
                 {formatCurrency(Number(item.amount))}
               </td>

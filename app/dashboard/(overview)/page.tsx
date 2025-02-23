@@ -6,7 +6,7 @@ import {
   CardsSkeleton,
 } from "@/app/ui/skeletons";
 import { AreaChart } from "../../ui/charts/AreaChart";
-import { fetchIncome } from "../../lib/data";
+import { fetchIncome } from "../../../lib/data";
 import { useState } from "react";
 import { IncomeTableComponent } from "@/app/ui/dashboard/Tables";
 import { LineChartOnValueChangeExample } from "@/app/ui/charts/LineChart";
@@ -14,22 +14,25 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
 export default async function Page() {
-
   const session = await auth();
-  if(!session) redirect('/')
+  if (!session) redirect("/");
   return (
     <main className=" h-[50vh]">
-      <h1 className={` mb-4 text-xl md:text-2xl`}>Welcome, {session?.user?.name} </h1>
+      <h1 className={` mb-4 text-xl md:text-2xl`}>
+        Welcome, {session?.user?.name}{" "}
+      </h1>
       <p>This is an overview of your documented finances so far</p>
-      <p> New updates would constantly be added so please feel free to make suggestions for features you would like to have. Thank you!</p>
+      <p>
+        {" "}
+        New updates would constantly be added so please feel free to make
+        suggestions for features you would like to have. Thank you!
+      </p>
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         <CardWrapper />
       </div>
 
       <div className="flex items-center justify-center  h-full">
-
-          <h1>Graphs and charts coming soon</h1>
-
+        <h1>Graphs and charts coming soon</h1>
       </div>
 
       {/* <div className="w-full bg-red">

@@ -1,18 +1,21 @@
-'use client';
+"use client";
 
 import {
   AtSymbolIcon,
   KeyIcon,
   ExclamationCircleIcon,
-  UserIcon
-} from '@heroicons/react/24/outline';
-import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import Link from 'next/link'
-import { useActionState } from 'react';
-import { register, registerState } from '@/app/lib/actions';
+  UserIcon,
+} from "@heroicons/react/24/outline";
+import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import Link from "next/link";
+import { useActionState } from "react";
+import { register, registerState } from "@/lib/actions";
 
 export default function RegisterForm() {
-  const [errorMessage, formAction, isPending] = useActionState(register, {} as registerState);
+  const [errorMessage, formAction, isPending] = useActionState(
+    register,
+    {} as registerState
+  );
 
   return (
     <form action={formAction} className="space-y-3">
@@ -21,7 +24,10 @@ export default function RegisterForm() {
 
         {/* First Name */}
         <div>
-          <label className="mb-3 block text-xs font-medium text-gray-900" htmlFor="firstName">
+          <label
+            className="mb-3 block text-xs font-medium text-gray-900"
+            htmlFor="firstName"
+          >
             First Name
           </label>
           <div className="relative">
@@ -36,13 +42,18 @@ export default function RegisterForm() {
             <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
           </div>
           {errorMessage?.errors?.firstName && (
-            <p className="text-sm text-red-500">{errorMessage.errors.firstName[0]}</p>
+            <p className="text-sm text-red-500">
+              {errorMessage.errors.firstName[0]}
+            </p>
           )}
         </div>
 
         {/* Last Name */}
         <div>
-          <label className="mb-3 block text-xs font-medium text-gray-900" htmlFor="lastName">
+          <label
+            className="mb-3 block text-xs font-medium text-gray-900"
+            htmlFor="lastName"
+          >
             Last Name
           </label>
           <div className="relative">
@@ -57,13 +68,18 @@ export default function RegisterForm() {
             <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
           </div>
           {errorMessage?.errors?.lastName && (
-            <p className="text-sm text-red-500">{errorMessage.errors.lastName[0]}</p>
+            <p className="text-sm text-red-500">
+              {errorMessage.errors.lastName[0]}
+            </p>
           )}
         </div>
 
         {/* Email */}
         <div>
-          <label className="mb-3 block text-xs font-medium text-gray-900" htmlFor="email">
+          <label
+            className="mb-3 block text-xs font-medium text-gray-900"
+            htmlFor="email"
+          >
             Email
           </label>
           <div className="relative">
@@ -78,13 +94,18 @@ export default function RegisterForm() {
             <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
           </div>
           {errorMessage?.errors?.email && (
-            <p className="text-sm text-red-500">{errorMessage.errors.email[0]}</p>
+            <p className="text-sm text-red-500">
+              {errorMessage.errors.email[0]}
+            </p>
           )}
         </div>
 
         {/* Password */}
         <div className="mt-4">
-          <label className="mb-3 block text-xs font-medium text-gray-900" htmlFor="password">
+          <label
+            className="mb-3 block text-xs font-medium text-gray-900"
+            htmlFor="password"
+          >
             Password
           </label>
           <div className="relative">
@@ -100,13 +121,18 @@ export default function RegisterForm() {
             <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
           </div>
           {errorMessage?.errors?.password && (
-            <p className="text-sm text-red-500">{errorMessage.errors.password[0]}</p>
+            <p className="text-sm text-red-500">
+              {errorMessage.errors.password[0]}
+            </p>
           )}
         </div>
 
         {/* Confirm Password */}
         <div className="mt-4">
-          <label className="mb-3 block text-xs font-medium text-gray-900" htmlFor="confirmPassword">
+          <label
+            className="mb-3 block text-xs font-medium text-gray-900"
+            htmlFor="confirmPassword"
+          >
             Confirm Password
           </label>
           <div className="relative">
@@ -122,7 +148,9 @@ export default function RegisterForm() {
             <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
           </div>
           {errorMessage?.errors?.confirmPassword && (
-            <p className="text-sm text-red-500">{errorMessage.errors.confirmPassword[0]}</p>
+            <p className="text-sm text-red-500">
+              {errorMessage.errors.confirmPassword[0]}
+            </p>
           )}
         </div>
 
@@ -147,7 +175,7 @@ export default function RegisterForm() {
         </div>
 
         <div>
-          <Link href="/" > Log in </Link>
+          <Link href="/"> Log in </Link>
         </div>
       </div>
     </form>

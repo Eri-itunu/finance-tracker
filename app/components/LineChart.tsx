@@ -26,9 +26,9 @@ import {
   getColorClassName,
   getYAxisDomain,
   hasOnlyOneValueForKey,
-} from "@/app/lib/chartUtils";
-import { useOnWindowResize } from "@/app/lib/windowResize";
-import { cx } from "@/app/lib/utils";
+} from "@/lib/chartUtils";
+import { useOnWindowResize } from "@/lib/windowResize";
+import { cx } from "@/lib/utils";
 
 //#region Legend
 

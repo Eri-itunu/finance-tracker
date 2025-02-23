@@ -1,28 +1,24 @@
-'use client'
-
+"use client";
 
 import {
   AtSymbolIcon,
   KeyIcon,
   ExclamationCircleIcon,
-} from '@heroicons/react/24/outline';
-import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import Link from 'next/link';
-import { useActionState } from 'react';
-import { authenticate } from '@/app/lib/actions';
+} from "@heroicons/react/24/outline";
+import { ArrowRightIcon } from "@heroicons/react/20/solid";
+import Link from "next/link";
+import { useActionState } from "react";
+import { authenticate } from "@/lib/actions";
 
 export default function LoginForm() {
-  
   const [errorMessage, formAction, isPending] = useActionState(
     authenticate,
-    undefined,
+    undefined
   );
   return (
     <form action={formAction} className="space-y-3">
       <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
-        <h1 className={`mb-3 text-2xl`}>
-          Please log in to continue.
-        </h1>
+        <h1 className={`mb-3 text-2xl`}>Please log in to continue.</h1>
         <div className="w-full">
           <div>
             <label
@@ -78,11 +74,10 @@ export default function LoginForm() {
           )}
         </div>
 
-        <div className='text-center'>
+        <div className="text-center">
           New user? <Link href="/register"> Register now</Link>
         </div>
       </div>
-      
     </form>
   );
 }
