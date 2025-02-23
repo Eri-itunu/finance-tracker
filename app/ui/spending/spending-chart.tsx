@@ -18,7 +18,7 @@ export const DonutChartLabelExample = ({ data }: SpendingChartProps) => {
   }));
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-center p-8">
+    <div className="flex flex-col md:flex-row items-center gap-5 border rounded shadow-md justify-center p-8">
       <DonutChart
         className="mx-auto"
         data={formattedData}
@@ -30,7 +30,7 @@ export const DonutChartLabelExample = ({ data }: SpendingChartProps) => {
         }
       />
 
-      <div className="border p-4">
+      <div className=" ">
         <h1 className="text-2xl font-thin ">Category breakdown</h1>
         {formattedData.map((item, index) => (
           <p key={index}>
