@@ -177,7 +177,7 @@ const DonutChart = React.forwardRef<HTMLDivElement, DonutChartProps>(
       value,
       category,
       colors = AvailableChartColors,
-      variant = "donut",
+      variant = "pie",
       valueFormatter = (value: number) => value.toString(),
       label,
       showLabel = false,
