@@ -32,7 +32,7 @@ export default function RegisterForm() {
           </label>
           <div className="relative">
             <input
-              className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm placeholder:text-gray-500 outline-none"
+              className="peer text-[16px] block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm placeholder:text-gray-500 outline-none"
               id="firstName"
               type="text"
               name="firstName"
@@ -58,7 +58,7 @@ export default function RegisterForm() {
           </label>
           <div className="relative">
             <input
-              className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm placeholder:text-gray-500 outline-none"
+              className="peer text-[16px] block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm placeholder:text-gray-500 outline-none"
               id="lastName"
               type="text"
               name="lastName"
@@ -84,7 +84,7 @@ export default function RegisterForm() {
           </label>
           <div className="relative">
             <input
-              className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm placeholder:text-gray-500 outline-none"
+              className="peer text-[16px] block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm placeholder:text-gray-500 outline-none"
               id="email"
               type="email"
               name="email"
@@ -110,7 +110,7 @@ export default function RegisterForm() {
           </label>
           <div className="relative">
             <input
-              className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm placeholder:text-gray-500 outline-none"
+              className="peer block text-[16px] w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm placeholder:text-gray-500 outline-none"
               id="password"
               type="password"
               name="password"
@@ -137,7 +137,7 @@ export default function RegisterForm() {
           </label>
           <div className="relative">
             <input
-              className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm placeholder:text-gray-500 outline-none"
+              className="peer block w-full text-[16px] rounded-md border border-gray-200 py-[9px] pl-10 text-sm placeholder:text-gray-500 outline-none"
               id="confirmPassword"
               type="password"
               name="confirmPassword"

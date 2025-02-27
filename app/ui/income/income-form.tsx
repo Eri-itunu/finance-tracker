@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import {
-  CheckIcon,
-  ClockIcon,
+ 
   CurrencyDollarIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
@@ -11,11 +10,7 @@ import { useActionState } from "react";
 import { createIncomeEntry } from "@/lib/actions";
 import { useState, useEffect, useRef } from "react";
 
-type savingsGoals = {
-  id: number;
-  userId: number | null;
-  source: string;
-};
+
 type State = {
   message: string;
   errors: {
@@ -76,7 +71,7 @@ export default function Create({ userId }: { userId: string }) {
                 name="source"
                 type="text" // Use text to prevent browser from overriding formatting
                 placeholder="Enter Income Source "
-                className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                className="peer block w-full rounded-md border border-gray-200 text-[16px] py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
               />
 
               <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
@@ -106,7 +101,7 @@ export default function Create({ userId }: { userId: string }) {
                   value={formattedAmount}
                   ref={amountRef}
                   onChange={handleAmountChange}
-                  className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                  className="peer text-[16px] block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                 />
                 <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
               </div>

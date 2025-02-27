@@ -1,11 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { FolderIcon, TrashIcon, PencilIcon } from "@heroicons/react/24/outline";
-import { useActionState, useTransition } from "react";
-import { fetchCategories } from "@/lib/data";
-import { createCategory, State } from "@/lib/actions";
-import { deleteCategory } from "@/lib/data";
+import { FolderIcon,  } from "@heroicons/react/24/outline";
+import { useActionState,  } from "react";
+import { createCategory,  } from "@/lib/actions";
+
 
 type categoriesField = {
   id: number;
@@ -20,7 +19,7 @@ export default function Create({
   categories: categoriesField[];
   userId: string;
 }) {
-  const initialState: State = { message: "", errors: {} };
+ 
   const [errorMessage, formAction, isPending] = useActionState(
     createCategory,
     undefined
@@ -63,7 +62,7 @@ export default function Create({
                   id="category"
                   name="category"
                   placeholder="Enter New Category"
-                  className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                  className="peer block w-full rounded-md border text-[16px] border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                 />
                 <FolderIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
               </div>

@@ -2,13 +2,10 @@
 
 import Link from "next/link";
 import {
-  CheckIcon,
-  ClockIcon,
   CurrencyDollarIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import { useActionState } from "react";
-import { fetchCategories } from "@/lib/data";
 import { createSavingsCategory } from "@/lib/actions";
 
 type savingsGoals = {
@@ -91,7 +88,7 @@ export default function Create({
                   type="number"
                   step="0.01"
                   placeholder="Enter Naira amount"
-                  className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                  className="peer text-[16px] block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                 />
                 <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
               </div>

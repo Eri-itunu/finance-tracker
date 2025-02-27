@@ -18,8 +18,12 @@ export const metadata: Metadata = {
   description: "Created by Eriitunu",
 };
 
-export const viewport:Viewport = {
-   themeColor : "#000000"
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#000000"
 }
 
 export default function RootLayout({
