@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import {
-  CheckIcon,
-  ClockIcon,
+  
   CurrencyDollarIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
@@ -80,6 +79,7 @@ export default function Create({
                   name="date"
                   type="date"
                   placeholder="Enter Date"
+                  defaultValue={new Date().toISOString().split('T')[0]}
                   className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
                 />
                 <div id="dates-error" aria-live="polite" aria-atomic="true">
