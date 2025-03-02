@@ -124,7 +124,6 @@ export default function Create({ userId }: { userId: string }) {
             Cancel
           </Link>
           <button aria-disabled={isPending} type="submit">
-            Add Income
             {isPending ? "Adding Income...." : "Add Income"}
           </button>
         </div>
