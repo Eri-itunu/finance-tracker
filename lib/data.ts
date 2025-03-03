@@ -1,7 +1,7 @@
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import * as schema from "@/app/db/schema";
-import { eq, sum, or, isNull, and, desc, sql } from "drizzle-orm";
-import { formatCurrency, formatDateToLocal } from "@/lib/utils";
+import { eq, sum, or, isNull, and, desc,gte,lte } from "drizzle-orm";
+
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 const db = drizzle({ schema });
@@ -24,7 +24,7 @@ export async function fetchIncome(currentPage: number) {
       where: eq(schema.income.userId, Number(userId)),
     });
 
-    console.log(results);
+   
     return results;
   } catch (error) {
     console.error("Database Error:", error);
@@ -52,14 +52,21 @@ export async function fetchIncomePages() {
   }
 }
 
-export async function fetchSpending(currentPage: number) {
+export async function fetchSpending(currentPage: number, month?: string) {
   const session = await auth();
   const userId = session?.user?.id;
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
-  if (!userId) {
-    throw new Error("Unauthorized: No user ID found.");
-  }
+  // Get the current month if none specified
+  const currentMonth = month || new Date().toLocaleString("en-CA", { year: "numeric", month: "2-digit" });
+
+  const [year, monthNum] = currentMonth.split('-');
+  
+  const startDate = new Date(Number(year), Number(monthNum) - 1, 1);
+  const endDate = new Date(Number(year), Number(monthNum), 0, 23, 59, 59, 999); // Ensure full coverage
+
+  const startDateStr = startDate.toISOString().split('T')[0]; // Extracts YYYY-MM-DD
+  const endDateStr = endDate.toISOString().split('T')[0];
 
   try {
     const results = await db
@@ -76,7 +83,14 @@ export async function fetchSpending(currentPage: number) {
         schema.categories,
         eq(schema.spending.categoryId, schema.categories.id)
       )
-      .where(eq(schema.spending.userId, Number(userId)))
+      .where(
+        and(
+          eq(schema.spending.userId, Number(userId)),
+          eq(schema.spending.isDeleted, false),
+          gte(schema.spending.date, startDateStr),
+          lte(schema.spending.date, endDateStr) 
+        )  
+      )
       .limit(ITEMS_PER_PAGE)
       .offset(offset)
       .orderBy(desc(schema.spending.date));
@@ -88,38 +102,81 @@ export async function fetchSpending(currentPage: number) {
   }
 }
 
-export async function fetchSpendingPages() {
+export async function fetchSpendingPages(month?:string) {
   const session = await auth();
   const userId = session?.user?.id;
 
   if (!userId) {
     throw new Error("Unauthorized: No user ID found.");
   }
-  try {
-    const results = await db.query.spending.findMany({
-      where: eq(schema.spending.userId, Number(userId)),
-    });
 
-    const charts = await db
+  // Get the current month if none specified
+  const currentMonth = month || new Date().toLocaleString("en-CA", { year: "numeric", month: "2-digit" });
+
+  const [year, monthNum] = currentMonth.split('-');
+  
+  const startDate = new Date(Number(year), Number(monthNum) - 1, 1);
+  const endDate = new Date(Number(year), Number(monthNum), 0, 23, 59, 59, 999); // Ensure full coverage
+
+  const startDateStr = startDate.toISOString().split('T')[0]; // Extracts YYYY-MM-DD
+  const endDateStr = endDate.toISOString().split('T')[0];
+
+  try {
+    
+
+    const results = await db
       .select({
+        id: schema.spending.id,
+        date: schema.spending.date,
+        amount: schema.spending.amount,
+        itemName: schema.spending.itemName,
+        notes: schema.spending.notes,
         categoryName: schema.categories.categoryName,
-        totalAmount: sql<number>`SUM(${schema.spending.amount})`, // Sum of amounts per category
       })
       .from(schema.spending)
       .innerJoin(
         schema.categories,
         eq(schema.spending.categoryId, schema.categories.id)
       )
-      .where(eq(schema.spending.userId, Number(userId)))
-      .groupBy(schema.categories.categoryName); // Group by category
+      .where(
+        and(
+          eq(schema.spending.userId, Number(userId)),
+          eq(schema.spending.isDeleted, false),
+          gte(schema.spending.date, startDateStr),
+          lte(schema.spending.date, endDateStr) 
+        )  
+      )
+      const groupedData = results.reduce((acc, entry) => {
+        const { categoryName, amount } = entry;
+        const numericAmount = parseFloat(amount); // Convert string to number
+      
+        if (!acc[categoryName]) {
+          acc[categoryName] = 0;
+        }
+      
+        acc[categoryName] += numericAmount; // Sum amounts per category
+        return acc;
+      }, {} as Record<string, number>);
+      
+      // Convert the grouped object into an array format
+      const resultArray = Object.entries(groupedData).map(([categoryName, totalAmount]) => ({
+        categoryName,
+        totalAmount
+      }));
+   
+  
+  
+    // Calculate total pages based on ITEMS_PER_PAGE
+    const totalPages = Math.ceil(results.length / ITEMS_PER_PAGE);
 
-    const totalPages = Math.ceil(Number(results.length) / ITEMS_PER_PAGE);
-    console.log("theses are the resulta", charts);
-    return { charts, totalPages };
+    console.log({ resultArray, totalPages });
+
+    return { resultArray, totalPages };
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch user data.");
   }
+
 }
 
 export async function fetchSavings() {
@@ -144,7 +201,7 @@ export async function fetchSavings() {
       )
       .where(eq(schema.savingsContributions.userId, Number(userId))); // 👈 Filter by user ID
 
-    console.log(results);
+   
 
     return results;
   } catch (error) {
@@ -176,7 +233,7 @@ export async function fetchCategories() {
         )
       );
 
-    console.log(results);
+ 
     return results;
   } catch (error) {
     console.error("Database Error:", error);
@@ -214,7 +271,7 @@ export async function fetchCardData() {
     const totalSpend = Number(data[0][0].value ?? "0");
     const totalIncome = Number(data[1][0].value ?? "0");
     const totalSavings = Number(data[2][0].value ?? "0");
-    console.log(totalSpend, totalIncome, totalSavings);
+ 
     return { totalSpend, totalIncome, totalSavings };
   } catch (error) {
     console.error("Database Error:", error);
@@ -245,7 +302,7 @@ export async function fetchSavingsGoals() {
         )
       );
 
-    console.log(results);
+
     return results;
   } catch (error) {
     console.error("Database Error:", error);
@@ -271,12 +328,14 @@ export async function deleteSpend(id: number) {
           eq(schema.spending.id, id)
         )
       );
+      revalidatePath("/dashboard/expenses");
+      return results
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to delete spending data.");
   }
 
-  revalidatePath("/dashboard/expenses");
+  
 }
 
 export async function deleteCategory(id: number) {
@@ -297,10 +356,12 @@ export async function deleteCategory(id: number) {
           eq(schema.categories.id, id)
         )
       );
+      revalidatePath("/dashboard/expenses");
+      return results
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to delete spending data.");
   }
 
-  revalidatePath("/dashboard/expenses");
+  
 }

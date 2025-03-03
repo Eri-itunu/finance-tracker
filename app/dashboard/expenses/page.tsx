@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { fetchSpending, fetchSpendingPages, fetchCategories } from "@/lib/data";
-import { SpendingTableComponent } from "@/app/ui/dashboard/Tables";
-import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { SpendingTableComponent } from "@/app/ui/spending/table";
+import {  PlusIcon } from "@heroicons/react/24/outline";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Pagination from "@/app/ui/pagination";
@@ -14,10 +14,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import MonthSelector from "@/app/ui/month-selector";
 
 export default async function Expenses(props: {
   searchParams?: Promise<{
     page?: string;
+    month?:string;
   }>;
 }) {
   const session = await auth();
@@ -25,8 +27,9 @@ export default async function Expenses(props: {
 
   const searchParams = await props.searchParams;
   const currentPage = Number(searchParams?.page) || 1;
-  const { charts, totalPages } = await fetchSpendingPages();
-  const spending = await fetchSpending(currentPage);
+  const currentMonth = searchParams?.month || new Date().toISOString().slice(0, 7);
+  const {  resultArray,totalPages } = await fetchSpendingPages(currentMonth);
+  const spending = await fetchSpending(currentPage,currentMonth);
   const categories = await fetchCategories();
 
   return (
@@ -77,11 +80,20 @@ export default async function Expenses(props: {
         </div>
       </div>
 
-      <div className="mt-6 w-full flex flex-col gap-4 justify-end">
+      <div className="mt-6 w-full flex flex-col gap-4  justify-end">
+        <MonthSelector />
         <div>
-          <DonutChartLabelExample data={charts} />
+        {resultArray.length > 0 ? (
+            <DonutChartLabelExample data={resultArray} />
+          ) : (
+            <div>
+              <p>No chart data available yet</p>
+            </div>
+          )}
+          
         </div>
         <div>
+          
           {spending.length > 0 ? (
             <SpendingTableComponent data={spending} />
           ) : (
@@ -91,7 +103,9 @@ export default async function Expenses(props: {
           )}
         </div>
 
-        <Pagination totalPages={totalPages} />
+        <div className="flex justify-end">
+          <Pagination totalPages={totalPages} />
+        </div>
       </div>
     </>
   );

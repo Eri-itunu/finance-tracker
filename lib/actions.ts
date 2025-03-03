@@ -8,8 +8,10 @@ import { AuthError } from 'next-auth';
 import { signIn } from "@/auth"; // Your authentication logic
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
-import { auth } from "@/auth";
 import bcrypt from "bcrypt";
+import { deleteSpend } from './data';
+
+
 const db = drizzle({ schema });
 const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -100,7 +102,7 @@ export async function createSpending(prevState: State, formData: FormData) {
   } catch (error) {
     // If a database error occurs, return a more specific error.
     return {
-      message: 'Database Error: Failed to Create Spending Entry.',
+      message: 'Database Error: Failed to Create Spending Entry.',error
     };
   }
 
@@ -142,7 +144,7 @@ export async function createCategory(prevState: State | undefined, formData: For
   } catch (error) {
     // If a database error occurs, return a more specific error.
     return {
-      message: 'Database Error: Failed to Create Categories Entry.',
+      message: 'Database Error: Failed to Create Categories Entry.',error
     };
   }
 
@@ -193,7 +195,7 @@ export async function createSavingsCategory(prevState: State | undefined, formDa
   } catch (error) {
     // If a database error occurs, return a more specific error.
     return {
-      message: 'Database Error: Failed to Create Savings Entry.',
+      message: 'Database Error: Failed to Create Savings Entry.',error
     };
   }
 
@@ -246,7 +248,7 @@ export async function createIncomeEntry(prevState: State | undefined, formData: 
   } catch (error) {
     // If a database error occurs, return a more specific error.
     return {
-      message: 'Database Error: Failed to Create Income Entry.',
+      message: 'Database Error: Failed to Create Income Entry.',error
     };
   }
 
@@ -338,5 +340,16 @@ export async function register(prevState: registerState | undefined, formData: F
   } catch (error) {
     console.error("Error during registration:", error);
     return {  message: "Something went wrong. Please try again later." };
+  }
+}
+
+
+export async function deleteSpendingAction(id: number) {
+  try {
+    await deleteSpend(id);
+    revalidatePath('/dashboard/expenses');
+    return { message: 'Success' };
+  } catch (error) {
+    return { message: 'Error', error };
   }
 }

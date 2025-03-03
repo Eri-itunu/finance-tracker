@@ -1,7 +1,16 @@
 "use client";
 import { formatDateToLocal, formatCurrency } from "@/lib/utils";
-import { TrashIcon } from "@heroicons/react/20/solid";
-import { deleteSpend } from "@/lib/data";
+import { deleteSpendingAction } from "@/lib/actions";
+
+
+const handleDelete = async(id:number)=>{
+  try{
+    await deleteSpendingAction(id);
+    console.log('Successfully deleted')
+  }catch(error){
+    console.log('Failed to delete', error)
+  }
+}
 
 type income = {
   id: number;
@@ -50,6 +59,7 @@ export const SpendingTableComponent = ({ data }: SpendingTableProps) => {
             <th className="border border-gray-300 px-4 py-2">Item Name</th>
             <th className="border border-gray-300 px-4 py-2">Category</th>
             <th className="border border-gray-300 px-4 py-2">Amount</th>
+            <th className="border border-gray-300 px-4 py-2">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -66,6 +76,9 @@ export const SpendingTableComponent = ({ data }: SpendingTableProps) => {
               </td>
               <td className="border border-gray-300 px-4 py-2">
                 {formatCurrency(Number(item.amount))}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                <button onClick={()=>handleDelete(item.id)}>Delete</button>
               </td>
             </tr>
           ))}
