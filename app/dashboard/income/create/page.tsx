@@ -1,4 +1,4 @@
-import { fetchSavingsGoals } from "@/lib/data";
+
 import Form from "@/app/ui/income/income-form";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";

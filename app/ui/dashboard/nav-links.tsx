@@ -3,7 +3,6 @@
 import {
   HomeIcon,
   CurrencyPoundIcon,
-  TagIcon,
   BanknotesIcon,
   ChartPieIcon
 } from '@heroicons/react/24/outline';
