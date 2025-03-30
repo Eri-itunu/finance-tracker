@@ -22,8 +22,8 @@ export async function fetchIncome(currentPage: number) {
       limit: ITEMS_PER_PAGE,
       offset: offset,
       where: eq(schema.income.userId, Number(userId)),
+      orderBy: desc(schema.income.date) // Ensure this column exists in the `income` table
     });
-
    
     return results;
   } catch (error) {

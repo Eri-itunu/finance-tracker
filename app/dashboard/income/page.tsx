@@ -1,7 +1,6 @@
-import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { RevenueChartSkeleton } from "@/app/ui/skeletons";
+import {  PlusIcon, } from "@heroicons/react/24/outline";
 import { fetchIncome, fetchIncomePages } from "@/lib/data";
-import { useState } from "react";
+import Pagination from "@/app/ui/pagination";
 import { IncomeTableComponent } from "@/app/ui/dashboard/Tables";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
@@ -21,7 +20,7 @@ export default async function Income(props: {
   const income = await fetchIncome(currentPage);
   return (
     <main>
-      <div className="mt-6 w-full">
+      <div className="mt-6 w-full flex flex-col gap-4">
         <div className="flex justify-end gap-4">
           <Link
             href="/dashboard/income/create"
@@ -39,6 +38,10 @@ export default async function Income(props: {
           ) : (
             "No income data added yet"
           )}
+        </div>
+
+        <div className="flex justify-end">
+          <Pagination totalPages={totalPages} />
         </div>
       </div>
     </main>

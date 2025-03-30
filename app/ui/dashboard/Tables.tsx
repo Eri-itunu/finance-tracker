@@ -109,7 +109,7 @@ export const IncomeTableComponent = ({ data }: IncomeTableProps) => {
                 {item.source}
               </td>
               <td className="border border-gray-300 px-4 py-2">
-                N{formatCurrency(Number(item.amount))}
+                {formatCurrency(Number(item.amount))}
               </td>
             </tr>
           ))}
