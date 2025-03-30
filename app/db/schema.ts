@@ -1,5 +1,5 @@
-import { pgTable, varchar, uuid, text, decimal, integer, timestamp, date, boolean as pgBoolean } from "drizzle-orm/pg-core";
-import { sql } from "drizzle-orm";
+import { pgTable, varchar, text, decimal, integer, timestamp, date, boolean as pgBoolean } from "drizzle-orm/pg-core";
+
 
 //generating unique ids function
 function generateUniqueString(length: number = 12): string {

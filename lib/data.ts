@@ -338,6 +338,32 @@ export async function deleteSpend(id: number) {
   
 }
 
+export async function deleteIncome(id: number) {
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    throw new Error("Unauthorized: No user ID found.");
+  }
+
+  try {
+    const results = await db
+      .delete(schema.income)
+      .where(
+        and(
+          eq(schema.income.userId, Number(userId)),
+          eq(schema.income.id, id)
+        )
+      );
+      revalidatePath("/dashboard/income");
+      return results
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to delete income data.");
+  }
+
+}
+
 export async function deleteCategory(id: number) {
   const session = await auth();
   const userId = session?.user?.id;

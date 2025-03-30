@@ -1,7 +1,7 @@
 "use client";
 import { formatDateToLocal, formatCurrency } from "@/lib/utils";
-import { deleteSpendingAction } from "@/lib/actions";
-
+import { deleteSpendingAction, deleteIncomeAction } from "@/lib/actions";
+import { useState } from "react";
 
 const handleDelete = async(id:number)=>{
   try{
@@ -11,6 +11,8 @@ const handleDelete = async(id:number)=>{
     console.log('Failed to delete', error)
   }
 }
+
+
 
 type income = {
   id: number;
@@ -89,6 +91,20 @@ export const SpendingTableComponent = ({ data }: SpendingTableProps) => {
 };
 
 export const IncomeTableComponent = ({ data }: IncomeTableProps) => {
+  const [pendingRows, setPendingRows] = useState<{ [key: number]: boolean }>({});
+
+  const deleteIncome = async (id: number) => {
+    setPendingRows((prev) => ({ ...prev, [id]: true }));
+    try {
+      await deleteIncomeAction(id);
+      console.log("Successfully deleted");
+    } catch (error) {
+      console.log("Failed to delete", error);
+    } finally {
+      setPendingRows((prev) => ({ ...prev, [id]: false }));
+    }
+  };
+
   return (
     <div className="overflow-x-auto">
       <table className="table-auto border-collapse border border-gray-300 w-full text-sm">
@@ -97,6 +113,7 @@ export const IncomeTableComponent = ({ data }: IncomeTableProps) => {
             <th className="border border-gray-300 px-4 py-2">Date</th>
             <th className="border border-gray-300 px-4 py-2">Source</th>
             <th className="border border-gray-300 px-4 py-2">Amount</th>
+            <th className="border border-gray-300 px-4 py-2">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -110,6 +127,11 @@ export const IncomeTableComponent = ({ data }: IncomeTableProps) => {
               </td>
               <td className="border border-gray-300 px-4 py-2">
                 {formatCurrency(Number(item.amount))}
+              </td>
+              <td className="border border-gray-300 px-4 py-2">
+                <button onClick={()=>deleteIncome(item.id)}>
+                {pendingRows[item.id] ? "Deleting..." : "Delete"}
+                </button>
               </td>
             </tr>
           ))}

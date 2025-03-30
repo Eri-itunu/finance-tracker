@@ -9,7 +9,7 @@ import { signIn } from "@/auth"; // Your authentication logic
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import bcrypt from "bcrypt";
-import { deleteSpend } from './data';
+import { deleteSpend, deleteIncome } from './data';
 
 
 const db = drizzle({ schema });
@@ -348,6 +348,16 @@ export async function deleteSpendingAction(id: number) {
   try {
     await deleteSpend(id);
     revalidatePath('/dashboard/expenses');
+    return { message: 'Success' };
+  } catch (error) {
+    return { message: 'Error', error };
+  }
+}
+
+export async function deleteIncomeAction(id: number) {
+  try {
+    await deleteIncome(id);
+    revalidatePath('/dashboard/income');
     return { message: 'Success' };
   } catch (error) {
     return { message: 'Error', error };
