@@ -17,7 +17,7 @@ export default async function Savings() {
     <div>
       <div className="flex justify-end gap-4">
         <Link
-          href="/dashboard/savings/category"
+          href="/dashboard/savings/goal"
           className="flex h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
         >
           <PlusIcon className="h-5 md:ml-4" />
@@ -38,15 +38,18 @@ export default async function Savings() {
         <h1 className="text-2xl font-bold">Savings</h1>
       </div>
 
-      <div>
+      <div className="w-full">
         {/* <DonutChartLabelExample data={savings} /> */}
         {goals.length > 0 ? (
-          <ul>
+          <ul className="w-full flex flex-col gap-2">
             {goals.map((goal) => (
-              <li key={goal.goalId}>
-                {goal.goalName}
-                <Progress value={33} />
-                <span>{goal.targetAmount}</span>
+              <li className="w-full py-2" key={goal.goalId}>
+                <div className="flex w-full justify-between items-center py-3">
+                  <p>{goal.goalName}</p>
+                  <p>{Number(goal.totalContributed)}/{Number(goal.targetAmount)}</p>
+                </div>
+                <Progress  value={Number(goal.percentageSaved)} />
+                <span>{Number(goal.percentageSaved)}%</span>
               </li>
             ))}
           </ul>

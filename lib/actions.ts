@@ -27,6 +27,9 @@ export type State = {
     notes?: string[];
     date?: string[];
     category?: string[],
+    savingsGoal?: string[],
+    userId?: string[],
+    source?: string[]
   };
   message?: string | null;
 };
@@ -210,7 +213,51 @@ const incomeSchema  = z.object({
   }),
  source: z.string().min(1, { message: 'Item name is required.' }),
   userId: z.string()
+});
+
+const savingGoalSchema  = z.object({
+  amount: z.coerce.string().refine((val) => !isNaN(parseAmount(val)) && parseAmount(val) > 0, {
+    message: 'Please enter a valid amount greater than 0.',
+  }),
+  savingsGoal: z.string().min(1, { message: 'Item name is required.' }),
+  userId: z.string()
+});
+
+export async function createSavingsGoal(prevState: State | undefined, formData: FormData){
+  const validatedFields = savingGoalSchema.safeParse({
+    amount: formData.get('amount'),
+    userId: formData.get('userId'),
+    savingsGoal: formData.get('savingsGoal')
   });
+  // If form validation fails, return errors early. Otherwise, continue.
+  if (!validatedFields.success) {
+      console.log(validatedFields.error.flatten().fieldErrors)
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Missing Fields. Failed to Add New Saving.',
+    };
+  }
+  // Prepare data for insertion into the database
+  const { amount, userId, savingsGoal } = validatedFields.data;
+  const amountDecimal = parseAmount(amount).toFixed(2);
+  const date = new Date().toISOString().split('T')[0];
+  // Insert data into the database using Drizzle ORM
+  try {
+    await db.insert(schema.savingsGoals).values({
+      userId: Number(userId),
+      goalName: savingsGoal,
+      targetAmount: amountDecimal,
+      deadline: date
+    })
+  }catch(error){
+    return {
+      message: 'Database Error: Failed to Create Savings Goal Entry.',error
+    };
+  }
+
+  revalidatePath('/dashboard/savings');
+  redirect('/dashboard/savings');
+}
 
 export async function createIncomeEntry(prevState: State | undefined, formData: FormData){
 
