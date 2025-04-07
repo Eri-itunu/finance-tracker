@@ -32,7 +32,7 @@ export default function Create({
     createSavingsCategory,
     initialState
   );
-  //const categories = await fetchCategories();
+
   return (
     <>
       <form action={formAction} className="w-full  mx-auto">

@@ -7,6 +7,7 @@ export default function MonthSelector() {
   const searchParams = useSearchParams();
 
   // Use the current month if none is specified in the URL
+  const currentDay = new Date().getDate();
   const currentMonth = searchParams.get('month') || new Date().toISOString().slice(0, 7);
   const currentYear = new Date().getFullYear(); // Dynamically get the year
 
@@ -29,17 +30,22 @@ export default function MonthSelector() {
   };
 
   return (
-    <select
-      value={currentMonth}
-      onChange={handleMonthChange}
-      className="rounded-md border border-gray-200 py-2 px-4"
-    >
-      {months.map((month) => (
-        <option key={month.value} value={month.value}>
-          {month.label}
-          
-        </option>
-      ))}
-    </select>
+    <div>
+      <select >
+        <option value={currentDay}>{currentDay}</option>
+      </select>
+      <select
+        value={currentMonth}
+        onChange={handleMonthChange}
+        className="rounded-md border border-gray-200 py-2 px-4"
+      >
+        {months.map((month) => (
+          <option key={month.value} value={month.value}>
+            {month.label}
+            
+          </option>
+        ))}
+      </select>
+    </div>
   );
 }

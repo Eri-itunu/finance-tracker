@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import * as schema from "@/app/db/schema";
-import { eq, sum, or, isNull, and, desc,gte,lte } from "drizzle-orm";
+import { eq, sum, or, isNull, and, desc,gte,lte,sql } from "drizzle-orm";
 
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
@@ -302,9 +302,39 @@ export async function fetchSavingsGoals() {
         )
       );
 
-
+    console.log(results);
     return results;
   } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch savings goals data.");
+  }
+}
+
+export async function fetchSavingsPercentages(){
+  const session = await auth();
+  const userId = session?.user?.id;
+  if (!userId) {
+    throw new Error("Unauthorized: No user ID found.");
+  }
+  try {
+    const results = await db
+  .select({
+    goalId: schema.savingsGoals.id,
+    goalName: schema.savingsGoals.goalName,
+    targetAmount: schema.savingsGoals.targetAmount,
+    totalContributed: sql`COALESCE(SUM(${schema.savingsContributions.amount}), 0)`.as("total_contributed"),
+    percentageSaved: sql`ROUND(COALESCE(SUM(${schema.savingsContributions.amount}), 0) / ${schema.savingsGoals.targetAmount} * 100, 2)`.as("percentage_saved")
+  })
+  .from(schema.savingsGoals)
+  .leftJoin(schema.savingsContributions, sql`${schema.savingsGoals.id} = ${schema.savingsContributions.goalId}`)
+  .groupBy(schema.savingsGoals.id, schema.savingsGoals.goalName, schema.savingsGoals.targetAmount)
+  .where(
+      eq(schema.savingsGoals.userId, Number(userId)), // Match userId
+  );
+
+  return results;
+
+  } catch(error){
     console.error("Database Error:", error);
     throw new Error("Failed to fetch savings goals data.");
   }

@@ -1,15 +1,18 @@
-import { fetchSavings } from "@/lib/data";
+import { fetchSavings, fetchSavingsPercentages } from "@/lib/data";
 import { SavingsTableComponent } from "@/app/ui/dashboard/Tables";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { DonutChartLabelExample } from "@/app/ui/savings/savings-charts";
+import { PlusIcon } from "@heroicons/react/24/outline";
+import { Progress } from "@/components/ui/progress";
+
+
 
 export default async function Savings() {
   const session = await auth();
   if (!session) redirect("/");
   const savings = await fetchSavings();
+  const goals = await fetchSavingsPercentages()
   return (
     <div>
       <div className="flex justify-end gap-4">
@@ -36,7 +39,18 @@ export default async function Savings() {
       </div>
 
       <div>
-        <DonutChartLabelExample data={savings} />
+        {/* <DonutChartLabelExample data={savings} /> */}
+        {goals.length > 0 ? (
+          <ul>
+            {goals.map((goal) => (
+              <li key={goal.goalId}>
+                {goal.goalName}
+                <Progress value={33} />
+                <span>{goal.targetAmount}</span>
+              </li>
+            ))}
+          </ul>
+        ) : <p>empty</p>}
       </div>
       {savings.length > 0 ? (
         <SavingsTableComponent data={savings} />

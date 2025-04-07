@@ -1,15 +1,5 @@
-import { Suspense } from "react";
-import CardWrapper from "@/app/ui/dashboard/cards";
-import {
-  RevenueChartSkeleton,
-  LatestInvoicesSkeleton,
-  CardsSkeleton,
-} from "@/app/ui/skeletons";
-import { AreaChart } from "../../ui/charts/AreaChart";
-import { fetchIncome } from "../../../lib/data";
-import { useState } from "react";
-import { IncomeTableComponent } from "@/app/ui/dashboard/Tables";
-import { LineChartOnValueChangeExample } from "@/app/ui/charts/LineChart";
+import CardWrapper from "@/app/ui/dashboard/CardWrapper";
+
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
