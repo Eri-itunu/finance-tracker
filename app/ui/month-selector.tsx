@@ -31,6 +31,9 @@ export default function MonthSelector() {
 
   return (
     <div>
+      <select >
+        <option value={currentDay}>{currentDay}</option>
+      </select>
       <select
         value={currentMonth}
         onChange={handleMonthChange}
@@ -39,6 +42,7 @@ export default function MonthSelector() {
         {months.map((month) => (
           <option key={month.value} value={month.value}>
             {month.label}
+            
           </option>
         ))}
       </select>
