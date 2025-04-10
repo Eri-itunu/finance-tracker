@@ -150,6 +150,7 @@ export async function fetchSpendingPages(
         totalAmount,
       })
     );
+    resultArray.sort((a, b) => b.totalAmount - a.totalAmount);
 
     // ✅ Second query: total count of items only for selected category
     let categoryPageCount = 0;
