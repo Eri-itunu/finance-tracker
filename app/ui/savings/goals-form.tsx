@@ -4,6 +4,7 @@ import Link from "next/link";
 import {
   CurrencyDollarIcon,
   UserCircleIcon,
+  ArrowRightIcon
 } from "@heroicons/react/24/outline";
 import { useActionState } from "react";
 import { createSavingsCategory } from "@/lib/actions";
@@ -37,6 +38,20 @@ export default function Create({
     <>
       <form action={formAction} className="w-full  mx-auto">
         <div className="rounded-md bg-gray-50 p-4 md:p-6">
+          <div className="mb-5">
+            <ul>
+              <h1>Current saving goals</h1>
+              {savings.map((item) =>{
+                return(
+                  <li key={item.id} className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-gray-600">
+                      {item.goalName}
+                    </span>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
           {/* savingsGoal Name */}
           <input type="hidden" name="userId" value={userId} />
           <div className="mb-4">
@@ -44,26 +59,18 @@ export default function Create({
               htmlFor="savingsGoal"
               className="mb-2 block text-sm font-medium"
             >
-              Choose a savings goal
+              Enter a savings goal
             </label>
             <div className="relative">
-              <select
-                id="savingsId"
-                name="savingsId"
-                className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                defaultValue=""
-                aria-describedby="savingsgoal-error"
-              >
-                <option value="" disabled>
-                  Select a category
-                </option>
-                {savings.map((savings) => (
-                  <option key={savings.id} value={savings.id}>
-                    {savings.goalName}
-                  </option>
-                ))}
-              </select>
-              <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+              <input 
+              type="text" 
+              name="savingsGoal"
+              id="savingsGoal"
+              placeholder="Enter savings goal"
+              className="peer text-[16px] block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+              />
+              
+              <ArrowRightIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
             </div>
             <div id="category-error" aria-live="polite" aria-atomic="true">
               {state.errors?.savingsId &&
