@@ -28,6 +28,7 @@ type SpendingTableProps = {
 export const SpendingTableComponent = ({ data }: SpendingTableProps) => {
     return (
       <div className="overflow-x-auto rounded-md">
+
         <table className="table-auto rounded-md border-collapse border border-gray-300 w-full text-sm">
           <thead className="bg-gray-200">
             <tr>

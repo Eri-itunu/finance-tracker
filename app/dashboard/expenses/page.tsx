@@ -1,30 +1,43 @@
 import Link from "next/link";
-import { fetchSpending, fetchSpendingPages } from "@/lib/data";
+import { fetchSpending, fetchSpendingPages,fetchCategories } from "@/lib/data";
 import { SpendingTableComponent } from "@/app/ui/spending/table";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Pagination from "@/app/ui/pagination";
 import { DonutChartLabelExample } from "@/app/ui/spending/spending-chart";
-
+import CategorySelector from "@/app/ui/category-selector";
 import MonthSelector from "@/app/ui/month-selector";
 
 export default async function Expenses(props: {
   searchParams?: Promise<{
     page?: string;
-    month?: string;
+    startDate?:string;
+    endDate?:string;
+    category?:string;
   }>;
 }) {
   const session = await auth();
   if (!session) redirect("/");
 
+  const today = new Date();
+  const year = today.getFullYear();
+  const thisMonth = today.getMonth();
+  const customStartDate = new Date(year, thisMonth-1, 26);
+  const customEndDate = new Date(year, thisMonth, 26);
+  
+
+
   const searchParams = await props.searchParams;
   const currentPage = Number(searchParams?.page) || 1;
-  const currentMonth =
-    searchParams?.month || new Date().toISOString().slice(0, 7);
-  const { resultArray, totalPages } = await fetchSpendingPages(currentMonth);
-  const spending = await fetchSpending(currentPage, currentMonth);
+  const category = searchParams?.category || "";
   
+  const startParam = searchParams?.startDate || customStartDate.toISOString().slice(0, 10);
+  const endParam = searchParams?.endDate || customEndDate.toISOString().slice(0, 10);
+  const categories = await fetchCategories();
+  const { resultArray, totalPages } = await fetchSpendingPages(startParam, endParam);
+  const spending = await fetchSpending(currentPage,  startParam, endParam, category);
+
 
   return (
     <>
@@ -65,9 +78,14 @@ export default async function Expenses(props: {
             </div>
           )}
         </div>
+       
+        <CategorySelector categories={categories} />
+        
         <div>
           {spending.length > 0 ? (
-            <SpendingTableComponent data={spending} />
+      
+              <SpendingTableComponent data={spending} />
+            
           ) : (
             <div>
               <p>No expense data available yet</p>

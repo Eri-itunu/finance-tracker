@@ -41,12 +41,17 @@ export default async function Savings() {
       <div>
         {/* <DonutChartLabelExample data={savings} /> */}
         {goals.length > 0 ? (
-          <ul>
+          <ul className="flex flex-col gap-2 ">
             {goals.map((goal) => (
-              <li key={goal.goalId}>
-                {goal.goalName}
-                <Progress value={33} />
-                <span>{goal.targetAmount}</span>
+              <li className="py-4" key={goal.goalId}>
+                <div className="flex justify-between">
+                  <p>{goal.goalName}</p>
+                  <span>  {Number(goal.totalContributed)}/{Number(goal.targetAmount)}</span>
+                </div>
+                
+                <Progress value={Number(goal.percentageSaved)} />
+                
+                <span>{Number(goal.percentageSaved)}%</span>
               </li>
             ))}
           </ul>

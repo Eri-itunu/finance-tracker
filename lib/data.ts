@@ -52,23 +52,24 @@ export async function fetchIncomePages() {
   }
 }
 
-export async function fetchSpending(currentPage: number, month?: string) {
+export async function fetchSpending(currentPage: number,  startDate:string, endDate:string, category?:string) {
   const session = await auth();
   const userId = session?.user?.id;
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
-  // Get the current month if none specified
-  const currentMonth = month || new Date().toLocaleString("en-CA", { year: "numeric", month: "2-digit" });
-
-  const [year, monthNum] = currentMonth.split('-');
-  
-  const startDate = new Date(Number(year), Number(monthNum) - 1, 1);
-  const endDate = new Date(Number(year), Number(monthNum), 0, 23, 59, 59, 999); // Ensure full coverage
-
-  const startDateStr = startDate.toISOString().split('T')[0]; // Extracts YYYY-MM-DD
-  const endDateStr = endDate.toISOString().split('T')[0];
 
   try {
+    const baseConditions = [
+      eq(schema.spending.userId, Number(userId)),
+      eq(schema.spending.isDeleted, false),
+      gte(schema.spending.date, startDate),
+      lte(schema.spending.date, endDate),
+    ];
+
+    // If a category is provided, add it to the query
+    if (category) {
+      baseConditions.push(eq(schema.categories.categoryName, category));
+    }
     const results = await db
       .select({
         id: schema.spending.id,
@@ -84,12 +85,7 @@ export async function fetchSpending(currentPage: number, month?: string) {
         eq(schema.spending.categoryId, schema.categories.id)
       )
       .where(
-        and(
-          eq(schema.spending.userId, Number(userId)),
-          eq(schema.spending.isDeleted, false),
-          gte(schema.spending.date, startDateStr),
-          lte(schema.spending.date, endDateStr) 
-        )  
+        and(...baseConditions)  
       )
       .limit(ITEMS_PER_PAGE)
       .offset(offset)
@@ -102,7 +98,12 @@ export async function fetchSpending(currentPage: number, month?: string) {
   }
 }
 
-export async function fetchSpendingPages(month?:string) {
+
+export async function fetchSpendingPages(
+  startDate: string,
+  endDate: string,
+  category?: string
+) {
   const session = await auth();
   const userId = session?.user?.id;
 
@@ -110,74 +111,79 @@ export async function fetchSpendingPages(month?:string) {
     throw new Error("Unauthorized: No user ID found.");
   }
 
-  // Get the current month if none specified
-  const currentMonth = month || new Date().toLocaleString("en-CA", { year: "numeric", month: "2-digit" });
-
-  const [year, monthNum] = currentMonth.split('-');
-  
-  const startDate = new Date(Number(year), Number(monthNum) - 1, 1);
-  const endDate = new Date(Number(year), Number(monthNum), 0, 23, 59, 59, 999); // Ensure full coverage
-
-  const startDateStr = startDate.toISOString().split('T')[0]; // Extracts YYYY-MM-DD
-  const endDateStr = endDate.toISOString().split('T')[0];
-
   try {
-    
+    const sharedConditions = [
+      eq(schema.spending.userId, Number(userId)),
+      eq(schema.spending.isDeleted, false),
+      gte(schema.spending.date, startDate),
+      lte(schema.spending.date, endDate),
+    ];
 
-    const results = await db
+    // ✅ First query: group by category — *no category filter*
+    const fullResults = await db
       .select({
-        id: schema.spending.id,
-        date: schema.spending.date,
-        amount: schema.spending.amount,
-        itemName: schema.spending.itemName,
-        notes: schema.spending.notes,
         categoryName: schema.categories.categoryName,
+        amount: schema.spending.amount,
       })
       .from(schema.spending)
       .innerJoin(
         schema.categories,
         eq(schema.spending.categoryId, schema.categories.id)
       )
-      .where(
-        and(
-          eq(schema.spending.userId, Number(userId)),
-          eq(schema.spending.isDeleted, false),
-          gte(schema.spending.date, startDateStr),
-          lte(schema.spending.date, endDateStr) 
-        )  
-      )
-      const groupedData = results.reduce((acc, entry) => {
-        const { categoryName, amount } = entry;
-        const numericAmount = parseFloat(amount); // Convert string to number
-      
-        if (!acc[categoryName]) {
-          acc[categoryName] = 0;
-        }
-      
-        acc[categoryName] += numericAmount; // Sum amounts per category
-        return acc;
-      }, {} as Record<string, number>);
-      
-      // Convert the grouped object into an array format
-      const resultArray = Object.entries(groupedData).map(([categoryName, totalAmount]) => ({
+      .where(and(...sharedConditions));
+
+    const groupedData = fullResults.reduce((acc, entry) => {
+      const { categoryName, amount } = entry;
+      const numericAmount = parseFloat(amount); // Convert string to number
+
+      if (!acc[categoryName]) {
+        acc[categoryName] = 0;
+      }
+
+      acc[categoryName] += numericAmount;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const resultArray = Object.entries(groupedData).map(
+      ([categoryName, totalAmount]) => ({
         categoryName,
-        totalAmount
-      }));
-   
-  
-  
-    // Calculate total pages based on ITEMS_PER_PAGE
-    const totalPages = Math.ceil(results.length / ITEMS_PER_PAGE);
+        totalAmount,
+      })
+    );
 
-    console.log({ resultArray, totalPages });
+    // ✅ Second query: total count of items only for selected category
+    let categoryPageCount = 0;
 
-    return { resultArray, totalPages };
+    if (category) {
+      const filteredResults = await db
+        .select({
+          id: schema.spending.id,
+        })
+        .from(schema.spending)
+        .innerJoin(
+          schema.categories,
+          eq(schema.spending.categoryId, schema.categories.id)
+        )
+        .where(
+          and(
+            ...sharedConditions,
+            eq(schema.categories.categoryName, category)
+          )
+        );
+
+      categoryPageCount = Math.ceil(filteredResults.length / ITEMS_PER_PAGE);
+    }
+
+    return {
+      resultArray,
+      totalPages: category ? categoryPageCount : Math.ceil(fullResults.length / ITEMS_PER_PAGE),
+    };
   } catch (error) {
     console.error("Database Error:", error);
-    throw new Error("Failed to fetch user data.");
+    throw new Error("Failed to fetch spending pages.");
   }
-
 }
+
 
 export async function fetchSavings() {
   const session = await auth();
