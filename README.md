@@ -1,36 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+💰 Financial Tracker PWA
+A Progressive Web App (PWA) built with Next.js that helps users track daily expenses, view trends, and stay on top of their financial goals. Designed for fast performance, offline support, and a clean, responsive user interface.
 
-## Getting Started
+🧩 Features
+📆 Daily expense tracking with categories
 
-First, run the development server:
+📊 Visual analytics of spending trends
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+🔄 Data persistence with local storage (and future support for remote sync)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+📱 PWA features: installable on mobile, works offline, fast load times
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+✅ Form validation for inputs
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+📁 Organized file structure with layouts, components, and typed API handlers
 
-## Learn More
+🛠 Tech Stack
+Next.js (App Router)
 
-To learn more about Next.js, take a look at the following resources:
+TypeScript
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Tailwind CSS
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Drizzle ORM + PostgreSQL (coming soon)
 
-## Deploy on Vercel
+Zod for form validation
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Next PWA Plugin for PWA support
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Vercel for hosting
+
+
+📲 Deploy
+Deployed on Vercel – Visit Live App
+https://finance-tracker-delta-ivory.vercel.app/
+
+📌 Roadmap
+ Basic expense tracking
+
+ PWA support and offline access
+
+ User authentication
+
+ Sync with cloud database (PostgreSQL)
+
+ Budget limit notifications
+
+🤝 Contributions
+Open to feedback and contributions! Feel free to open issues or pull requests.
+
