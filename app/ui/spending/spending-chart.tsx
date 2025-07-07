@@ -38,6 +38,13 @@ export const DonutChartLabelExample = ({ data }: SpendingChartProps) => {
             {formatCurrency(item.totalAmount)}
           </p>
         ))}
+
+        <p className="font-bold mt-2">
+          Total:{" "}
+          {formatCurrency(
+            formattedData.reduce((sum, item) => sum + item.totalAmount, 0)
+          )}
+        </p>
       </div>
     </div>
   );
