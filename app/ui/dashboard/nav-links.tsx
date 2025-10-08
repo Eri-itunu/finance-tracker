@@ -18,6 +18,7 @@ const links = [
     href: '/dashboard/expenses',
     icon: BanknotesIcon,
   },
+  { name: 'AI', href: '/dashboard/ai', icon: ChartPieIcon },
   { name: 'Savings', href: '/dashboard/savings', icon: ChartPieIcon },
   { name: 'Income', href: '/dashboard/income', icon: CurrencyPoundIcon },
 ];

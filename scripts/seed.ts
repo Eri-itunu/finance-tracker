@@ -1,4 +1,4 @@
-import bycrypt from 'bcrypt';
+import bcrypt from "bcryptjs";
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
 import { categoriesData, incomeData, savingsData, savingsProgressData, spendingData  } from '@/app/db/placeholder';

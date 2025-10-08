@@ -4,12 +4,13 @@ import { z } from "zod";
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import * as schema from "@/app/db/schema";
 import { eq } from "drizzle-orm";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 type User = NextAuthUser & {
   firstName: string;
   lastName: string;
-}
+};
+
 const db = drizzle({ schema });
 
 async function getUser(email: string) {
@@ -40,18 +41,16 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         const passwordsMatch = await bcrypt.compare(password, user.password);
         if (!passwordsMatch) return null;
 
-        // Return only the needed fields
         return {
           id: user.id.toString(),
           firstName: user.firstName,
           lastName: user.lastName,
-          email: user.email, // Optional
+          email: user.email,
         };
       },
     }),
   ],
   callbacks: {
-    // Attach user data to JWT
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
@@ -60,7 +59,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       }
       return token;
     },
-    // Expose user data to session
     session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;
@@ -70,6 +68,9 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
     },
   },
   session: {
-    strategy: "jwt", // Store session data in JWT instead of database
+    strategy: "jwt",
   },
+
+  // ✅ Add this line
+  secret: process.env.AUTH_SECRET,
 });

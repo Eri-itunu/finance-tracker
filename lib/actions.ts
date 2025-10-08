@@ -8,7 +8,7 @@ import { AuthError } from 'next-auth';
 import { signIn } from "@/auth"; // Your authentication logic
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { deleteSpend, deleteIncome } from './data';
 
 
