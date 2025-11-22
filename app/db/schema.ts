@@ -1,17 +1,6 @@
 import { pgTable, varchar, text, decimal, integer, timestamp, date, boolean as pgBoolean } from "drizzle-orm/pg-core";
 
 
-//generating unique ids function
-// function generateUniqueString(length: number = 12): string {
-//   const characters =
-//     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-//   let uniqueString = "";
-//   for (let i = 0; i < length; i++) {
-//     const randomIndex = Math.floor(Math.random() * characters.length);
-//     uniqueString += characters[randomIndex];
-//   }
-//   return uniqueString;
-// }
 
 // Users Table
 export const users = pgTable("users", {

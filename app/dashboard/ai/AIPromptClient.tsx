@@ -12,7 +12,6 @@ export default function AIPromptClient() {
     setLoading(true);
     setError(null);
     setResponseText(null);
-    console.log("hello")
     try {
       const res = await fetch('/api/ai/insights', {
         method: 'POST',

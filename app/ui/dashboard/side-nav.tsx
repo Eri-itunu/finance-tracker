@@ -1,4 +1,4 @@
-import NavLinks from "@/app/ui/dashboard/nav-links";
+import {NavLinks} from "@/app/ui/dashboard/nav-links";
 import { signOut } from "@/auth";
 import { PowerIcon } from "@heroicons/react/24/outline";
 import {
@@ -11,20 +11,19 @@ import {
 
 export default function SideNav() {
   return (
-    <div className="flex h-full flex-col px-3 py-4 md:px-2">
-      <div className="flex grow flex-row justify-between space-x-2 md:flex-col md:space-x-0 md:space-y-2">
+    <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-white ">
+      <div className="flex px-4 py-2 justify-between">
         <NavLinks />
-        <div className="hidden h-auto w-full grow rounded-md bg-gray-50 md:block"></div>
+       
         <Dialog>
           <DialogTrigger>
-            <span className="flex h-[48px] w-full grow items-center justify-center gap-2 rounded-md bg-gray-50 p-3 text-sm font-medium hover:bg-sky-100 hover:text-blue-600 md:flex-none md:justify-start md:p-2 md:px-3">
-              <PowerIcon className="w-6" />
-              <div className="hidden md:block">Sign Out</div>
+            <span className="flex h-12 w-12 items-center justify-center rounded-full text-gray-600 hover:text-purple-600 transition-colors">
+              <PowerIcon className="w-8 h-8" />
             </span>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle className="text-center">Are you absolutely sure?</DialogTitle>
+              <DialogTitle className="text-center">Are you sure you want to sign out?</DialogTitle>
               
                 <div className="flex flex-row gap-4 py-4 w-full items-center justify-center ">
                   <form
@@ -47,3 +46,5 @@ export default function SideNav() {
     </div>
   );
 }
+
+

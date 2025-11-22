@@ -1,15 +1,17 @@
 "use client";
 
-import {
-  AtSymbolIcon,
-  KeyIcon,
-  ExclamationCircleIcon,
-  UserIcon,
-} from "@heroicons/react/24/outline";
-import { ArrowRightIcon } from "@heroicons/react/20/solid";
-import Link from "next/link";
 import { useActionState } from "react";
 import { register, registerState } from "@/lib/actions";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+import { PersonStanding } from "lucide-react";
+import { AtSign, Key } from "lucide-react";
 
 export default function RegisterForm() {
   const [errorMessage, formAction, isPending] = useActionState(
@@ -17,167 +19,141 @@ export default function RegisterForm() {
     {} as registerState
   );
 
+  const fieldError = (field: keyof registerState["errors"] | string) => {
+    return errorMessage?.errors?.[field]?.[0];
+  };
+
   return (
-    <form action={formAction} className="space-y-3">
-      <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
-        <h1 className="mb-3 text-2xl text-center">Please Register</h1>
+    <form action={formAction} className="w-full max-w-md mx-auto">
+      <Card className="p-6 rounded-2xl shadow-md border bg-white">
+        <CardHeader>
+          <CardTitle className="text-2xl font-semibold text-center">
+            Create an Account
+          </CardTitle>
+        </CardHeader>
 
-        {/* First Name */}
-        <div>
-          <label
-            className="mb-3 block text-xs font-medium text-gray-900"
-            htmlFor="firstName"
-          >
-            First Name
-          </label>
-          <div className="relative">
-            <input
-              className="peer text-[16px] block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm placeholder:text-gray-500 outline-none"
-              id="firstName"
-              type="text"
-              name="firstName"
-              placeholder="Enter your First Name"
-              required
-            />
-            <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+        <CardContent className="space-y-4">
+          {/* First Name */}
+          <div className="space-y-2">
+            <Label htmlFor="firstName">First Name</Label>
+            <div className="relative">
+              <Input
+                id="firstName"
+                name="firstName"
+                type="text"
+                placeholder="Enter your First Name"
+                required
+                className="pl-10"
+              />
+              <PersonStanding className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            </div>
+            {fieldError("firstName") && (
+              <p className="text-sm text-red-500">{fieldError("firstName")}</p>
+            )}
           </div>
-          {errorMessage?.errors?.firstName && (
-            <p className="text-sm text-red-500">
-              {errorMessage.errors.firstName[0]}
-            </p>
-          )}
-        </div>
 
-        {/* Last Name */}
-        <div>
-          <label
-            className="mb-3 block text-xs font-medium text-gray-900"
-            htmlFor="lastName"
-          >
-            Last Name
-          </label>
-          <div className="relative">
-            <input
-              className="peer text-[16px] block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm placeholder:text-gray-500 outline-none"
-              id="lastName"
-              type="text"
-              name="lastName"
-              placeholder="Enter your Last Name"
-              required
-            />
-            <UserIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+          {/* Last Name */}
+          <div className="space-y-2">
+            <Label htmlFor="lastName">Last Name</Label>
+            <div className="relative">
+              <Input
+                id="lastName"
+                name="lastName"
+                type="text"
+                placeholder="Enter your Last Name"
+                required
+                className="pl-10"
+              />
+              <PersonStanding className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            </div>
+            {fieldError("lastName") && (
+              <p className="text-sm text-red-500">{fieldError("lastName")}</p>
+            )}
           </div>
-          {errorMessage?.errors?.lastName && (
-            <p className="text-sm text-red-500">
-              {errorMessage.errors.lastName[0]}
-            </p>
-          )}
-        </div>
 
-        {/* Email */}
-        <div>
-          <label
-            className="mb-3 block text-xs font-medium text-gray-900"
-            htmlFor="email"
-          >
-            Email
-          </label>
-          <div className="relative">
-            <input
-              className="peer text-[16px] block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm placeholder:text-gray-500 outline-none"
-              id="email"
-              type="email"
-              name="email"
-              placeholder="Enter your email address"
-              required
-            />
-            <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+          {/* Email */}
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <div className="relative">
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="Enter your email address"
+                required
+                className="pl-10"
+              />
+              <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            </div>
+            {fieldError("email") && (
+              <p className="text-sm text-red-500">{fieldError("email")}</p>
+            )}
           </div>
-          {errorMessage?.errors?.email && (
-            <p className="text-sm text-red-500">
-              {errorMessage.errors.email[0]}
-            </p>
-          )}
-        </div>
 
-        {/* Password */}
-        <div className="mt-4">
-          <label
-            className="mb-3 block text-xs font-medium text-gray-900"
-            htmlFor="password"
-          >
-            Password
-          </label>
-          <div className="relative">
-            <input
-              className="peer block text-[16px] w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm placeholder:text-gray-500 outline-none"
-              id="password"
-              type="password"
-              name="password"
-              placeholder="Enter password"
-              required
-              minLength={6}
-            />
-            <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+          {/* Password */}
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <div className="relative">
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="Enter password"
+                minLength={6}
+                required
+                className="pl-10"
+              />
+              <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            </div>
+            {fieldError("password") && (
+              <p className="text-sm text-red-500">{fieldError("password")}</p>
+            )}
           </div>
-          {errorMessage?.errors?.password && (
-            <p className="text-sm text-red-500">
-              {errorMessage.errors.password[0]}
-            </p>
-          )}
-        </div>
 
-        {/* Confirm Password */}
-        <div className="mt-4">
-          <label
-            className="mb-3 block text-xs font-medium text-gray-900"
-            htmlFor="confirmPassword"
-          >
-            Confirm Password
-          </label>
-          <div className="relative">
-            <input
-              className="peer block w-full text-[16px] rounded-md border border-gray-200 py-[9px] pl-10 text-sm placeholder:text-gray-500 outline-none"
-              id="confirmPassword"
-              type="password"
-              name="confirmPassword"
-              placeholder="Confirm password"
-              required
-              minLength={6}
-            />
-            <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+          {/* Confirm Password */}
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Confirm Password</Label>
+            <div className="relative">
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                placeholder="Confirm password"
+                minLength={6}
+                required
+                className="pl-10"
+              />
+              <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            </div>
+            {fieldError("confirmPassword") && (
+              <p className="text-sm text-red-500">{fieldError("confirmPassword")}</p>
+            )}
           </div>
-          {errorMessage?.errors?.confirmPassword && (
-            <p className="text-sm text-green-500">
-              {errorMessage.errors.confirmPassword[0]}
-            </p>
-          )}
-        </div>
 
-        {/* Submit Button */}
-        <button
-          className="mt-4 w-full bg-blue-600 text-white py-2 rounded-md flex items-center justify-center disabled:bg-gray-400"
-          aria-disabled={isPending}
-          disabled={isPending}
-        >
-          {isPending ? "Registering..." : "Register"}
-          <ArrowRightIcon className="ml-2 h-5 w-5 text-gray-50" />
-        </button>
-
-        {/* General Form Errors */}
-        <div className="flex h-8 items-end space-x-1">
+          {/* General Form Errors */}
           {errorMessage?.message && (
-            <>
-              <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
-              <p className="text-sm text-green-500">{errorMessage.message}</p>
-            </>
+            <Alert variant="destructive" className="mt-2">
+              <ExclamationTriangleIcon className="h-4 w-4" />
+              <AlertTitle>Error</AlertTitle>
+              <AlertDescription>{errorMessage.message}</AlertDescription>
+            </Alert>
           )}
-        </div>
+        </CardContent>
 
-        <div>
-          <Link href="/"> Log in </Link>
-        </div>
-      </div>
+        <CardFooter className="flex flex-col gap-4">
+          <Button type="submit" disabled={isPending} className="w-full">
+            {isPending ? "Registering..." : "Register"}
+            <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+
+          <p className="text-sm text-center text-muted-foreground">
+            Already have an account?{" "}
+            <Link href="/" className="underline">
+              Log in
+            </Link>
+          </p>
+        </CardFooter>
+      </Card>
     </form>
   );
 }

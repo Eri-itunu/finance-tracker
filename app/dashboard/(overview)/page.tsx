@@ -18,9 +18,9 @@ export default async function Page() {
         <CardWrapper />
       </div>
 
-      <div className="flex items-center justify-center w-full mt-4 h-full">
+      {/* <div className="flex items-center justify-center w-full mt-4 h-full">
         <AICard />
-      </div>
+      </div> */}
 
       {/* <div className="w-full bg-red">
         <LineChartOnValueChangeExample />

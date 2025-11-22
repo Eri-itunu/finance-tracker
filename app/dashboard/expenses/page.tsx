@@ -8,6 +8,8 @@ import Pagination from "@/app/ui/pagination";
 import { DonutChartLabelExample } from "@/app/ui/spending/spending-chart";
 import CategorySelector from "@/app/ui/category-selector";
 import MonthSelector from "@/app/ui/month-selector";
+import DateRangePicker from "@/app/ui/date-select";
+
 
 export default async function Expenses(props: {
   searchParams?: Promise<{
@@ -25,9 +27,6 @@ export default async function Expenses(props: {
   const thisMonth = today.getMonth();
   const customStartDate = new Date(year, thisMonth-1, 26);
   const customEndDate = new Date(year, thisMonth, 26);
-  
-
-
   const searchParams = await props.searchParams;
   const currentPage = Number(searchParams?.page) || 1;
   const category = searchParams?.category || "";
@@ -41,55 +40,62 @@ export default async function Expenses(props: {
 
   return (
     <>
-      <div className="flex justify-between items-center gap-4">
-        <h1 className="text-2xl font-semibold">Expenses</h1>
-
-        <div className="flex gap-4 flex-col md:flex-row ">
-        
-
-          <Link
-            href="/dashboard/expenses/category"
-            className="flex h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-          >
-            <PlusIcon className="h-5 md:ml-4" />
-            <span className="hidden md:block"> Add Category </span>
-            <span className="md:hidden block"> Category</span>
-          </Link>
-
-          <Link
-            href="/dashboard/expenses/create"
-            className="flex h-10 items-center rounded-lg bg-blue-600 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-          >
-            <PlusIcon className="h-5 md:ml-4" />
-            <span className="hidden md:block"> New Expense </span>
-            <span className="md:hidden block"> Expense</span>
-          </Link>
-        </div>
+      {/* Top date range selector */}
+      <div className="w-full flex justify-center mt-4">
+        <button
+          className="text-purple-600 font-semibold text-lg "
+  
+        >
+          {/* {formatShort(startParam)} — {formatShort(endParam)} */}
+          <DateRangePicker startParam={startParam} endParam={endParam} />
+        </button>
       </div>
+     
 
-      <div className="mt-6 w-full flex flex-col gap-4  justify-end">
-        <MonthSelector />
-        <div>
-          {resultArray.length > 0 ? (
-            <DonutChartLabelExample data={resultArray} />
+      {/* Categories + Spending */}
+      <div className="mt-6 px-4 flex flex-col gap-6">
+        
+        {/* Header */}
+        <div className="flex justify-between items-center px-1">
+          <h2 className="text-gray-800 font-medium text-sm uppercase tracking-wide">
+            Category
+          </h2>
+          <h2 className="text-gray-800 font-medium text-sm uppercase tracking-wide">
+            Spent
+          </h2>
+        </div>
+
+        {/* Category list */}
+        <div className="flex flex-col gap-3">
+          {resultArray?.length > 0 ? (
+            resultArray.map((item: any) => (
+              <div
+                key={item.category}
+                className="flex justify-between items-center bg-gray-50 px-4 py-3 rounded-xl shadow-sm border"
+              >
+                <p className="text-gray-700 font-medium">{item.category}</p>
+                <p className="text-gray-900 font-semibold">{item.amount}</p>
+              </div>
+            ))
           ) : (
-            <div>
-              <p>No chart data available yet</p>
-            </div>
+            <p className="text-center text-gray-500">No categories found</p>
           )}
         </div>
-       
-        <CategorySelector categories={categories} />
-        
-        <div>
+
+        {/* Add New Category Button */}
+        <Link
+          href="/dashboard/expenses/category"
+          className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl text-center font-medium mt-2"
+        >
+          Add New Category
+        </Link>
+
+        {/* Expense Table (Existing) */}
+        <div className="mt-4">
           {spending.length > 0 ? (
-      
-              <SpendingTableComponent data={spending} />
-            
+            <SpendingTableComponent data={spending} />
           ) : (
-            <div>
-              <p>No expense data available yet</p>
-            </div>
+            <p className="text-center text-gray-500">No expense data available yet</p>
           )}
         </div>
 
@@ -97,6 +103,24 @@ export default async function Expenses(props: {
           <Pagination totalPages={totalPages} />
         </div>
       </div>
+
+      {/* Floating Plus Button */}
+      <Link
+        href="/dashboard/expenses/create"
+        className="
+          fixed bottom-24 right-6
+          bg-black text-white
+          hover:bg-purple-700
+          transition
+          w-14 h-14 rounded-full
+          flex items-center justify-center
+          shadow-xl
+          z-50
+        "
+      >
+        <PlusIcon className="w-7 h-7" />
+      </Link>
     </>
   );
+
 }
