@@ -72,7 +72,7 @@ export async function fetchCompiledSpendingByCategory(
   const userId = session?.user?.id;
 
   if (!userId) return [];
-
+  const loading = true
   try {
     const results = await db
       .select({
@@ -140,7 +140,7 @@ export async function fetchSpending(currentPage: number,  startDate:string, endD
       .where(
         and(...baseConditions)  
       )
-      .limit(ITEMS_PER_PAGE)
+      // .limit(ITEMS_PER_PAGE)
       // .offset(offset)
       .orderBy(desc(schema.spending.date));
     console.log("these are sepnding results", results)

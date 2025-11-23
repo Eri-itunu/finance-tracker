@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Drawer,
   DrawerContent,
@@ -12,7 +12,7 @@ import { Card } from "@/components/ui/card";
 import { useRouter, useSearchParams } from "next/navigation";
 import { DialogHeader, DialogFooter } from "@/components/ui/dialog";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle } from "@radix-ui/react-dialog";
-import { Trash2 } from "lucide-react";
+import { Trash2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { deleteSpendingAction } from "@/lib/actions";
 
@@ -31,7 +31,7 @@ export type SpendingItem = {
 
 interface Props {
   categorySpending: CategorySummary[];
-  spending: any[]; // coming from parent based on selected category
+  spending: any[];
 }
 
 export default function CategorySpendingList({ categorySpending, spending }: Props) {
@@ -40,25 +40,41 @@ export default function CategorySpendingList({ categorySpending, spending }: Pro
   const [loadingId, setLoadingId] = useState<number | null>(null);
   const [open, setOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [isLoadingSpending, setIsLoadingSpending] = useState(false);
 
   const handleOpenCategory = (cat: string) => {
+    setActiveCategory(cat);
+    setIsLoadingSpending(true);
+    
     const params = new URLSearchParams(searchParams.toString());
     params.set("category", cat);
     router.replace(`?${params.toString()}`, { scroll: false });
-    setActiveCategory(cat);
   };
+
+  // Simulate loading delay when category changes
+  useEffect(() => {
+    if (activeCategory) {
+      setIsLoadingSpending(true);
+      const timer = setTimeout(() => {
+        setIsLoadingSpending(false);
+      }, 2000); // 2 second delay
+
+      return () => clearTimeout(timer);
+    }
+  }, [activeCategory]);
+
   const handleDelete = async (id: number) => {
     try {
       setLoadingId(id);
       await deleteSpendingAction(id);
       console.log("Successfully deleted");
       setLoadingId(null);
-      // Optionally: trigger a refetch of the data here
     } catch (error) {
       console.log("Failed to delete", error);
       setLoadingId(null);
     }
   };
+
   return (
     <div className="flex flex-col gap-3">
       {categorySpending?.length > 0 ? (
@@ -80,8 +96,13 @@ export default function CategorySpendingList({ categorySpending, spending }: Pro
               </DrawerHeader>
 
               {/* CATEGORY SPENDING LIST */}
-              <div className="mt-4 space-y-3">
-                {activeCategory === item.categoryName && spending?.length > 0 ? (
+              <div className="mt-4 space-y-3 h-[70vh] overflow-scroll">
+                {isLoadingSpending && activeCategory === item.categoryName ? (
+                  <div className="flex flex-col items-center justify-center h-full gap-3">
+                    <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+                    <p className="text-gray-500 text-sm">Loading spending records...</p>
+                  </div>
+                ) : activeCategory === item.categoryName && spending?.length > 0 ? (
                   spending.map((sp) => (
                     <Card
                       key={sp.id}
@@ -92,32 +113,11 @@ export default function CategorySpendingList({ categorySpending, spending }: Pro
                         <p className="text-sm text-gray-500">{sp.date}</p>
                       </div>
                       <p className="font-semibold text-gray-900">₦{sp.amount.toLocaleString()}</p>
-                      {/* <Dialog>
-                          <DialogTrigger>
-                            <Trash2 className="h-5 w-5 text-red-500 cursor-pointer" />
-                          </DialogTrigger>
-                          <DialogContent className="rounded-2xl p-6">
-                            <DialogHeader>
-                              <DialogTitle>Delete transaction?</DialogTitle>
-                            </DialogHeader>
-                            <p className="text-sm text-gray-600">This action cannot be undone.</p>
-                            <DialogFooter className="flex gap-2">
-                              <Button variant="outline">Cancel</Button>
-                              <Button
-                                onClick={() => handleDelete(item.id)}
-                                disabled={loadingId === item.id}
-                                className="bg-red-500 text-white hover:bg-red-600"
-                              >
-                                {loadingId === item.id ? "Deleting..." : "Delete"}
-                              </Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog> */}
                     </Card>
                   ))
-                ) : (
+                ) : activeCategory === item.categoryName ? (
                   <p className="text-gray-500 text-center">No spending records found</p>
-                )}
+                ) : null}
               </div>
             </DrawerContent>
           </Drawer>
