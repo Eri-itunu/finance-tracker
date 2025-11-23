@@ -12,7 +12,7 @@ import {
 export default function SideNav() {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-white ">
-      <div className="flex px-4 py-2 justify-between">
+      <div className="flex px-4 py-4 justify-between">
         <NavLinks />
        
         <Dialog>
