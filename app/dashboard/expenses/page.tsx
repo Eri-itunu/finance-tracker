@@ -17,20 +17,20 @@ import CategorySpendingList from "./CategroySpendingList";
 export default async function Expenses({
   searchParams,
 }: {
-  searchParams?: {
+  searchParams?: Promise<{
     page?: string;
     startDate?: string;
     endDate?: string;
     category?: string;
-  };
+  }>;
 }) {
   const session = await auth();
   if (!session) redirect("/");
 
-  const params = searchParams ?? {};
-
-  const currentPage = Number(params.page) || 1;
-  const category = params.category || "";
+  // Await searchParams ONCE at the top
+  const params = await searchParams ?? {};
+  const { page, startDate, endDate, category } = params;
+  const currentPage = Number(page) || 1;
 
   const today = new Date();
   const year = today.getFullYear();
@@ -38,14 +38,10 @@ export default async function Expenses({
   const customStartDate = new Date(year, thisMonth - 1, 26);
   const customEndDate = new Date(year, thisMonth, 26);
 
-  const startParam =
-    params.startDate || customStartDate.toISOString().slice(0, 10);
+  // Use the destructured values directly
+  const startParam = startDate || customStartDate.toISOString().slice(0, 10);
+  const endParam = endDate || customEndDate.toISOString().slice(0, 10);
 
-  const endParam =
-    params.endDate || customEndDate.toISOString().slice(0, 10);
-
-  const categories = await fetchCategories();
-  const { resultArray, totalPages } = await fetchSpendingPages(startParam, endParam);
   const spending = await fetchSpending(currentPage, startParam, endParam, category);
   const categorySpending = await fetchCompiledSpendingByCategory(startParam, endParam);
   const totalSpent = await getSpendingGroupedByDate(startParam, endParam);
@@ -53,20 +49,14 @@ export default async function Expenses({
   return (
     <>
       {/* Top date range selector */}
-      {/* <div>
-        <p>{session?.user?.name}{" "}</p>
-      </div> */}
       <div className="w-full flex justify-center mt-4">
         <button
           className="text-purple-600 font-semibold text-lg "
-  
         >
-          {/* {formatShort(startParam)} — {formatShort(endParam)} */}
           <DateRangePicker startParam={startParam} endParam={endParam} />
         </button>
       </div>
      
-
       {/* Categories + Spending */}
       <div className="mt-6 px-4 flex flex-col gap-6">
         
@@ -85,8 +75,6 @@ export default async function Expenses({
           spending={spending}
         />
 
-    
-
         {/* Add New Category Button */}
         <Link
           href="/dashboard/expenses/category"
@@ -94,30 +82,12 @@ export default async function Expenses({
         >
           Add New Category
         </Link>
-
-        {/* Expense Table (Existing) */}
-        {/* <div className="mt-4">
-          {spending.length > 0 ? (
-            <SpendingTableComponent data={spending} />
-          ) : (
-            <p className="text-center text-gray-500">No expense data available yet</p>
-          )}
-        </div>
-
-        <div className="flex justify-end">
-          <Pagination totalPages={totalPages} />
-        </div> */}
       </div>
       
-      
-      <TransactionsTable  data={totalSpent} />
+      <TransactionsTable data={totalSpent} />
      
-       <div>
-      
+      <div>
         <AddSpendButton />
       </div>
-      
     </>
-  );
-
-}
+  )}
