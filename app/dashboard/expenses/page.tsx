@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { fetchSpending, fetchSpendingPages,fetchCategories } from "@/lib/data";
+import { fetchSpending, fetchSpendingPages,fetchCategories,fetchCompiledSpendingByCategory,getSpendingGroupedByDate } from "@/lib/data";
 import { SpendingTableComponent } from "@/app/ui/spending/table";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { auth } from "@/auth";
@@ -9,38 +9,53 @@ import { DonutChartLabelExample } from "@/app/ui/spending/spending-chart";
 import CategorySelector from "@/app/ui/category-selector";
 import MonthSelector from "@/app/ui/month-selector";
 import DateRangePicker from "@/app/ui/date-select";
+import AddSpendDrawer from "./AddSpendDrawer";
+import AddSpendButton from "./AddSpendButton";
+import TransactionsTable from "./TransactionTable";
+import CategorySpendingList from "./CategroySpendingList";
 
-
-export default async function Expenses(props: {
-  searchParams?: Promise<{
+export default async function Expenses({
+  searchParams,
+}: {
+  searchParams?: {
     page?: string;
-    startDate?:string;
-    endDate?:string;
-    category?:string;
-  }>;
+    startDate?: string;
+    endDate?: string;
+    category?: string;
+  };
 }) {
   const session = await auth();
   if (!session) redirect("/");
 
+  const params = searchParams ?? {};
+
+  const currentPage = Number(params.page) || 1;
+  const category = params.category || "";
+
   const today = new Date();
   const year = today.getFullYear();
   const thisMonth = today.getMonth();
-  const customStartDate = new Date(year, thisMonth-1, 26);
+  const customStartDate = new Date(year, thisMonth - 1, 26);
   const customEndDate = new Date(year, thisMonth, 26);
-  const searchParams = await props.searchParams;
-  const currentPage = Number(searchParams?.page) || 1;
-  const category = searchParams?.category || "";
-  
-  const startParam = searchParams?.startDate || customStartDate.toISOString().slice(0, 10);
-  const endParam = searchParams?.endDate || customEndDate.toISOString().slice(0, 10);
+
+  const startParam =
+    params.startDate || customStartDate.toISOString().slice(0, 10);
+
+  const endParam =
+    params.endDate || customEndDate.toISOString().slice(0, 10);
+
   const categories = await fetchCategories();
   const { resultArray, totalPages } = await fetchSpendingPages(startParam, endParam);
-  const spending = await fetchSpending(currentPage,  startParam, endParam, category);
-
+  const spending = await fetchSpending(currentPage, startParam, endParam, category);
+  const categorySpending = await fetchCompiledSpendingByCategory(startParam, endParam);
+  const totalSpent = await getSpendingGroupedByDate(startParam, endParam);
 
   return (
     <>
       {/* Top date range selector */}
+      {/* <div>
+        <p>{session?.user?.name}{" "}</p>
+      </div> */}
       <div className="w-full flex justify-center mt-4">
         <button
           className="text-purple-600 font-semibold text-lg "
@@ -65,22 +80,12 @@ export default async function Expenses(props: {
           </h2>
         </div>
 
-        {/* Category list */}
-        <div className="flex flex-col gap-3">
-          {resultArray?.length > 0 ? (
-            resultArray.map((item: any) => (
-              <div
-                key={item.category}
-                className="flex justify-between items-center bg-gray-50 px-4 py-3 rounded-xl shadow-sm border"
-              >
-                <p className="text-gray-700 font-medium">{item.category}</p>
-                <p className="text-gray-900 font-semibold">{item.amount}</p>
-              </div>
-            ))
-          ) : (
-            <p className="text-center text-gray-500">No categories found</p>
-          )}
-        </div>
+        <CategorySpendingList
+          categorySpending={categorySpending}
+          spending={spending}
+        />
+
+    
 
         {/* Add New Category Button */}
         <Link
@@ -91,7 +96,7 @@ export default async function Expenses(props: {
         </Link>
 
         {/* Expense Table (Existing) */}
-        <div className="mt-4">
+        {/* <div className="mt-4">
           {spending.length > 0 ? (
             <SpendingTableComponent data={spending} />
           ) : (
@@ -101,25 +106,17 @@ export default async function Expenses(props: {
 
         <div className="flex justify-end">
           <Pagination totalPages={totalPages} />
-        </div>
+        </div> */}
       </div>
-
-      {/* Floating Plus Button */}
-      <Link
-        href="/dashboard/expenses/create"
-        className="
-          fixed bottom-24 right-6
-          bg-black text-white
-          hover:bg-purple-700
-          transition
-          w-14 h-14 rounded-full
-          flex items-center justify-center
-          shadow-xl
-          z-50
-        "
-      >
-        <PlusIcon className="w-7 h-7" />
-      </Link>
+      
+      
+      <TransactionsTable  data={totalSpent} />
+     
+       <div>
+      
+        <AddSpendButton />
+      </div>
+      
     </>
   );
 

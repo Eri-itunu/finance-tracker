@@ -1,11 +1,23 @@
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import * as schema from "@/app/db/schema";
-import { eq, sum, or, isNull, and, desc,gte,lte,sql } from "drizzle-orm";
+import { eq, sum, or, isNull, and,asc, desc,gte,lte,sql } from "drizzle-orm";
 
 import { auth } from "@/auth";
 import { revalidatePath } from "next/cache";
 const db = drizzle({ schema });
 
+export type SpendingItem = {
+  id: number;
+  itemName: string;
+  category?: string;
+  amount: number;
+  notes?: string | null;
+};
+
+export type SpendingGroup = {
+  date: string;
+  items: SpendingItem[];
+};
 const ITEMS_PER_PAGE = 6;
 export async function fetchIncome(currentPage: number) {
   const session = await auth();
@@ -24,7 +36,7 @@ export async function fetchIncome(currentPage: number) {
       where: eq(schema.income.userId, Number(userId)),
       orderBy: desc(schema.income.date) // Ensure this column exists in the `income` table
     });
-   
+    
     return results;
   } catch (error) {
     console.error("Database Error:", error);
@@ -52,10 +64,51 @@ export async function fetchIncomePages() {
   }
 }
 
+export async function fetchCompiledSpendingByCategory(
+  startDate: string,
+  endDate: string
+) {
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId) return [];
+
+  try {
+    const results = await db
+      .select({
+        categoryName: schema.categories.categoryName,
+        totalSpent: sql<number>`SUM(${schema.spending.amount})`,
+      })
+      .from(schema.spending)
+      .leftJoin(
+        schema.categories,
+        eq(schema.spending.categoryId, schema.categories.id)
+      )
+      .where(
+        and(
+          eq(schema.spending.userId, Number(userId)),
+          eq(schema.spending.isDeleted, false),
+          gte(schema.spending.date, startDate),
+          lte(schema.spending.date, endDate)
+        )
+      )
+      .groupBy(schema.categories.categoryName)
+      .orderBy(sql`SUM(${schema.spending.amount}) DESC`); // optional: sort by total spent
+
+    // Map null categories to "Uncategorized"
+    return results.map((row) => ({
+      categoryName: row.categoryName ?? "Uncategorized",
+      totalSpent: Number(row.totalSpent),
+    }));
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch compiled spending per category.");
+  }
+}
 export async function fetchSpending(currentPage: number,  startDate:string, endDate:string, category?:string) {
   const session = await auth();
   const userId = session?.user?.id;
-  const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
 
 
   try {
@@ -88,13 +141,64 @@ export async function fetchSpending(currentPage: number,  startDate:string, endD
         and(...baseConditions)  
       )
       .limit(ITEMS_PER_PAGE)
-      .offset(offset)
+      // .offset(offset)
       .orderBy(desc(schema.spending.date));
-
+    console.log("these are sepnding results", results)
     return results;
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to fetch spending data.");
+  }
+}
+
+
+export async function getSpendingGroupedByDate(
+  startDate: string,
+  endDate: string
+){
+
+  const session = await auth();
+  const userId = session?.user?.id;
+   if (!userId) return [];
+  try{
+    const rows = await db
+    .select({
+      id: schema.spending.id,
+      date: schema.spending.date,
+      itemName: schema.spending.itemName,
+      amount: schema.spending.amount,
+      notes: schema.spending.notes,
+      category: schema.categories.categoryName,
+    })
+    .from(schema.spending)
+    .leftJoin(schema.categories, eq(schema.spending.categoryId, schema.categories.id))
+    .where(
+      and(
+        eq(schema.spending.userId, Number(userId)),
+        gte(schema.spending.date, startDate),
+        lte(schema.spending.date, endDate),
+        eq(schema.spending.isDeleted, false)
+      )
+    )
+    .orderBy(schema.spending.date);
+
+  const grouped: Record<string, SpendingItem[]> = {};
+  rows.forEach((row) => {
+    const key = row.date.split("T")[0];
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push({
+      id: row.id,
+      itemName: row.itemName,
+      category: row.category ?? "Uncategorized",
+      amount: Number(row.amount),
+      notes: row.notes,
+    });
+  });
+
+  return Object.entries(grouped).map(([date, items]) => ({ date, items }));
+  } catch (error){
+    console.error("Database Error:", error);
+    throw new Error("Failed to fetch spending pages.");
   }
 }
 
@@ -174,7 +278,7 @@ export async function fetchSpendingPages(
 
       categoryPageCount = Math.ceil(filteredResults.length / ITEMS_PER_PAGE);
     }
-
+    console.log(resultArray)
     return {
       resultArray,
       totalPages: category ? categoryPageCount : Math.ceil(fullResults.length / ITEMS_PER_PAGE),

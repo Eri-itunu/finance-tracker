@@ -1,229 +1,183 @@
+// app/spend/new/SpendFormClient.tsx
 "use client";
 
+import { useState, useMemo } from "react";
 import Link from "next/link";
-import {
-  
-  CurrencyDollarIcon,
-  UserCircleIcon,
-} from "@heroicons/react/24/outline";
-import { useActionState } from "react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
+import clsx from "clsx";
 import { createSpending } from "@/lib/actions";
+import { useActionState } from "react"; // follows your project pattern
 
-type categoriesField = {
+type Category = {
   id: number;
   userId: number | null;
   categoryName: string;
 };
-type State = {
-  message: string;
-  errors: {
-    amount?: string[];
-    itemName?: string[];
-    categoryId?: string[];
-    notes?: string[];
-    date?: string[];
-  };
-};
-export default function Create({
-  categories,
-  userId,
-}: {
-  categories: categoriesField[];
+
+type Props = {
+  categories: Category[];
   userId: string;
-}) {
-  const initialState: State = { message: "", errors: {} };
-  const [state, formAction, pending] = useActionState(
-    createSpending,
-    initialState
-  );
-  const [formattedAmount, setFormattedAmount] = useState("");
+  amount: string; // numeric string passed via query param
+};
 
-  // Function to format number with commas
-  const formatNumberWithCommas = (value: string) => {
-    // Remove non-numeric characters except decimal point
-    let num = value.replace(/[^0-9.]/g, "");
+export default function SpendFormClient({ categories, userId, amount }: Props) {
+  const router = useRouter();
 
-    // Ensure only one decimal point exists
-    const parts = num.split(".");
-    if (parts.length > 2) {
-      num = parts[0] + "." + parts.slice(1).join("");
-    }
+  // action state pattern you used elsewhere
+  const initialState = { message: "", errors: {} } as any;
+  const [state, formAction, pending] = useActionState(createSpending, initialState);
 
-    // Format integer part with commas
-    const [integer, decimal] = num.split(".");
-    const formattedInteger = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const [itemName, setItemName] = useState("");
+  const [categoryId, setCategoryId] = useState<number | "">("");
+  const [notes, setNotes] = useState("");
+  const [date, setDate] = useState(() => new Date().toISOString().split("T")[0]);
+  const [repeat, setRepeat] = useState("never");
 
-    return decimal ? `${formattedInteger}.${decimal}` : formattedInteger;
-  };
-
-  // Handle input change
-  const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setFormattedAmount(formatNumberWithCommas(value));
-  };
+  // formatted display (NGN 2,563.00)
+  const formattedAmount = useMemo(() => {
+    const n = Number(amount || "0");
+    return `NGN ${n.toLocaleString("en-NG")}.00`;
+  }, [amount]);
 
   return (
-    <>
-      <form action={formAction} className="w-full  mx-auto">
-        <div className="rounded-md bg-gray-50 p-4 md:p-6">
-          {/* Category Name */}
-          <div className="mb-4">
-            <label htmlFor="date" className="mb-2 block text-sm font-medium">
-              Select a date
-            </label>
-            <div className="relative mt-2 rounded-md">
-              <div className="relative">
-                <input
-                  id="date"
-                  name="date"
-                  type="date"
-                  placeholder="Enter Date"
-                  defaultValue={new Date().toISOString().split('T')[0]}
-                  className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                />
-                <div id="dates-error" aria-live="polite" aria-atomic="true">
-                  {state.errors?.date &&
-                    state.errors.date.map((error: string) => (
-                      <p className="mt-2 text-sm text-red-500" key={error}>
-                        {error}
-                      </p>
-                    ))}
-                </div>
-              </div>
-            </div>
-          </div>
-          <input type="hidden" name="userId" value={userId} />
-          <div className="mb-4">
-            <label
-              htmlFor="category"
-              className="mb-2 block text-sm font-medium"
-            >
-              Choose a category
-            </label>
-            <div className="relative">
-              <select
-                id="category"
-                name="categoryId"
-                className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                defaultValue=""
-                aria-describedby="customer-error"
-              >
-                <option value="" disabled>
-                  Select a category
-                </option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.categoryName}
-                  </option>
-                ))}
-              </select>
-              <UserCircleIcon className="pointer-events-none absolute hidden md:block left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
-            </div>
-            <div id="category-error" aria-live="polite" aria-atomic="true">
-              {state.errors?.categoryId &&
-                state.errors.categoryId.map((error: string) => (
-                  <p className="mt-2 text-sm text-red-500" key={error}>
-                    {error}
-                  </p>
-                ))}
-            </div>
-          </div>
+    <div className="overflow-scroll mb-20">
+      {/* Header */}
+      <header className="flex items-center justify-between px-4 py-4 border-b bg-white sticky top-0 z-20">
+        <button onClick={() => router.back()} aria-label="Back" className="p-1">
+          <ArrowLeft size={24} />
+        </button>
 
-          {/* Spending Amount */}
-          <div className="mb-4">
-            <label htmlFor="amount" className="mb-2 block text-sm font-medium">
-              Enter amount
-            </label>
-            <div className="relative mt-2 rounded-md">
-              <div className="relative">
-                <input
-                  id="amount"
-                  name="amount"
-                  type="text"
-                  placeholder="Enter Naira amount"
-                  value={formattedAmount}
-                  onChange={handleAmountChange}
-                  className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-[16px] outline-2 placeholder:text-gray-500"
-                />
-                <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-              </div>
-              <div id="amount-error" aria-live="polite" aria-atomic="true">
-                {state.errors?.amount &&
-                  state.errors.amount.map((error: string) => (
-                    <p className="mt-2 text-sm text-red-500" key={error}>
-                      {error}
-                    </p>
-                  ))}
-              </div>
-            </div>
-          </div>
+        <div className="text-center">
+          <p className="text-lg font-semibold">{formattedAmount}</p>
+        </div>
 
-          <div className="mb-4">
-            <label
-              htmlFor="itemName"
-              className="mb-2 block text-sm font-medium"
-            >
-              Enter item name
-            </label>
-            <div className="relative mt-2 rounded-md">
-              <div className="relative">
-                <input
-                  id="itemName"
-                  name="itemName"
-                  type="text"
-                  placeholder="Enter Item Name"
-                  className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                />
-              </div>
-              <div id="itemName-error" aria-live="polite" aria-atomic="true">
-                {state.errors?.itemName &&
-                  state.errors.itemName.map((error: string) => (
-                    <p className="mt-2 text-sm text-red-500" key={error}>
-                      {error}
-                    </p>
-                  ))}
-              </div>
-            </div>
-          </div>
+        <button
+          type="submit"
+          form="spendForm"
+          className="bg-green-500 text-white text-sm px-4 py-2 rounded-full"
+        >
+          Add
+        </button>
+      </header>
 
-          <div className="mb-4">
-            <label htmlFor="notes" className="mb-2 block text-sm font-medium">
-              Add notes (optional)
-            </label>
-            <div className="relative mt-2 rounded-md">
-              <div className="relative">
-                <input
-                  id="notes"
-                  name="notes"
-                  type="text"
-                  placeholder="Enter Additional Notes"
-                  className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
-                />
-                <div id="notes-error" aria-live="polite" aria-atomic="true">
-                  {state.errors?.notes &&
-                    state.errors.notes.map((error: string) => (
-                      <p className="mt-2 text-sm text-red-500" key={error}>
-                        {error}
-                      </p>
-                    ))}
-                </div>
-              </div>
-            </div>
+      {/* Form container */}
+      <form id="spendForm" action={formAction} className="px-4 pt-4 space-y-6">
+        <input type="hidden" name="userId" value={userId} />
+        <input type="hidden" name="amount" value={amount} />
+
+        {/* For */}
+        <div className="flex items-center justify-between py-4 border-b">
+          <div className="text-sm text-gray-700 w-1/3">For</div>
+          <div className="w-2/3 text-right">
+            <input
+              name="itemName"
+              value={itemName}
+              onChange={(e) => setItemName(e.target.value)}
+              placeholder="What did you spend on?"
+              className="w-full text-right placeholder-gray-400 text-base border-none outline-none"
+            />
           </div>
         </div>
-        <div className="mt-6 flex justify-end gap-4">
-          <Link
-            href="/dashboard/expenses"
-            className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
-          >
+
+
+
+        {/* Date */}
+        <div className="flex items-center justify-between py-4 border-b">
+          <div className="text-sm text-gray-700 w-1/3">Date</div>
+          <div className="w-2/3 text-right">
+            <input
+              name="date"
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="w-full text-right border-none outline-none placeholder-gray-400"
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between py-4 border-b">
+           <div className="text-sm text-gray-700 w-1/3">Notes (optional)</div>
+          <textarea
+            name="notes"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Add a note"
+            className="w-full text-right border-none outline-none placeholder-gray-400"
+            rows={1}
+          />
+        </div>
+
+
+
+        {/* Categories header */}
+        <div className="mt-4 text-xs uppercase tracking-wide text-gray-500">Categories</div>
+
+        {/* Categories list */}
+        <div className="space-y-3 mb-24">
+          {categories.map((c) => (
+            <label key={c.id} className="flex items-center justify-between py-3 border-b">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center">
+                  <span className="text-sm font-semibold">{c.categoryName.charAt(0)}</span>
+                </div>
+                <div>
+                  <div className="text-sm font-medium">{c.categoryName}</div>
+                </div>
+              </div>
+
+              <input
+                type="radio"
+                name="categoryId"
+                value={c.id}
+                checked={Number(categoryId) === c.id}
+                onChange={() => setCategoryId(c.id)}
+                className="w-5 h-5 accent-green-500"
+              />
+            </label>
+          ))}
+
+          {/* Add new category dashed box */}
+          <Link href="/dashboard/expenses/category" className="block mt-4">
+            <div className="border-2 border-dashed border-gray-300 rounded-xl py-5 text-center text-gray-500">
+              Add new category
+            </div>
+          </Link>
+        </div>
+
+        {/* Notes */}
+        <div className="pt-4">
+          <label className="text-sm text-gray-600 mb-2 block">Notes (optional)</label>
+          <textarea
+            name="notes"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Add a note"
+            className="w-full border border-gray-200 rounded-lg p-3 text-sm outline-none focus:border-black"
+            rows={3}
+          />
+        </div>
+
+        {/* Errors */}
+        <div aria-live="polite" className="text-sm text-red-600">
+          {state?.errors?.message && <div>{state.errors.message}</div>}
+        </div>
+
+        {/* Footer ACTIONS */}
+        <div className="flex justify-end gap-4 mt-6 mb-10">
+          <Link href="/dashboard/expenses" className="h-10 px-4 rounded-lg bg-gray-100 text-gray-700 flex items-center">
             Cancel
           </Link>
-          <button disabled={pending} type="submit">
-            {pending ? "Adding Expense..." : "Add Expense"}
+
+          <button
+            type="submit"
+            disabled={pending}
+            className="h-10 px-4 rounded-lg bg-green-500 text-white flex items-center"
+          >
+            {pending ? "Adding..." : "Add Expense"}
           </button>
         </div>
       </form>
-    </>
+    </div>
   );
 }

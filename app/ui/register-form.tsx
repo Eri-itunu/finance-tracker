@@ -19,9 +19,6 @@ export default function RegisterForm() {
     {} as registerState
   );
 
-  const fieldError = (field: keyof registerState["errors"] | string) => {
-    return errorMessage?.errors?.[field]?.[0];
-  };
 
   return (
     <form action={formAction} className="w-full max-w-md mx-auto">
@@ -47,8 +44,10 @@ export default function RegisterForm() {
               />
               <PersonStanding className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             </div>
-            {fieldError("firstName") && (
-              <p className="text-sm text-red-500">{fieldError("firstName")}</p>
+            {errorMessage?.errors?.firstName && (
+              <p className="text-sm text-red-500">
+                {errorMessage.errors.firstName[0]}
+              </p>
             )}
           </div>
 
@@ -66,8 +65,10 @@ export default function RegisterForm() {
               />
               <PersonStanding className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             </div>
-            {fieldError("lastName") && (
-              <p className="text-sm text-red-500">{fieldError("lastName")}</p>
+            {errorMessage?.errors?.lastName && (
+            <p className="text-sm text-red-500">
+                {errorMessage.errors.lastName[0]}
+              </p>
             )}
           </div>
 
@@ -85,9 +86,11 @@ export default function RegisterForm() {
               />
               <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             </div>
-            {fieldError("email") && (
-              <p className="text-sm text-red-500">{fieldError("email")}</p>
-            )}
+             {errorMessage?.errors?.email && (
+            <p className="text-sm text-red-500">
+              {errorMessage.errors.email[0]}
+            </p>
+          )}
           </div>
 
           {/* Password */}
@@ -105,8 +108,10 @@ export default function RegisterForm() {
               />
               <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             </div>
-            {fieldError("password") && (
-              <p className="text-sm text-red-500">{fieldError("password")}</p>
+            {errorMessage?.errors?.password && (
+              <p className="text-sm text-red-500">
+                {errorMessage.errors.password[0]}
+              </p>
             )}
           </div>
 
@@ -125,12 +130,15 @@ export default function RegisterForm() {
               />
               <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             </div>
-            {fieldError("confirmPassword") && (
-              <p className="text-sm text-red-500">{fieldError("confirmPassword")}</p>
+            {errorMessage?.errors?.confirmPassword && (
+              <p className="text-sm text-green-500">
+                {errorMessage.errors.confirmPassword[0]}
+              </p>
             )}
           </div>
 
           {/* General Form Errors */}
+          
           {errorMessage?.message && (
             <Alert variant="destructive" className="mt-2">
               <ExclamationTriangleIcon className="h-4 w-4" />
