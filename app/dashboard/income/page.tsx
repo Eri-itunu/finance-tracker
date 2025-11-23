@@ -6,11 +6,16 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 
-export default async function Income({params}: {params: Promise<{ page?: string }>}) {
+export default async function Income(props: {
+  searchParams?: Promise<{
+    page?: string;
+  }>;
+}) {
   const session = await auth();
   if (!session) redirect("/");
-  const { page} = await params
-  const currentPage = Number(page) || 1;
+
+  const searchParams = await props.searchParams;
+  const currentPage = Number(searchParams?.page) || 1;
   const totalPages = await fetchIncomePages();
   const income = await fetchIncome(currentPage);
   return (

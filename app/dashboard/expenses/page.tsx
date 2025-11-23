@@ -14,17 +14,23 @@ import AddSpendButton from "./AddSpendButton";
 import TransactionsTable from "./TransactionTable";
 import CategorySpendingList from "./CategroySpendingList";
 
-export default async function Expenses({params}: {params: Promise<{ page?: string;
+export default async function Expenses({
+  searchParams,
+}: {
+  searchParams?: {
+    page?: string;
     startDate?: string;
     endDate?: string;
-    category?: string; }>} 
-){
+    category?: string;
+  };
+}) {
   const session = await auth();
   if (!session) redirect("/");
 
-  const {startDate, endDate, category, page} = await params
- const currentPage = Number(page) || 1;
+  const params = searchParams ?? {};
 
+  const currentPage = Number(params.page) || 1;
+  const category = params.category || "";
 
   const today = new Date();
   const year = today.getFullYear();
@@ -33,10 +39,10 @@ export default async function Expenses({params}: {params: Promise<{ page?: strin
   const customEndDate = new Date(year, thisMonth, 26);
 
   const startParam =
-    startDate || customStartDate.toISOString().slice(0, 10);
+    params.startDate || customStartDate.toISOString().slice(0, 10);
 
   const endParam =
-    endDate || customEndDate.toISOString().slice(0, 10);
+    params.endDate || customEndDate.toISOString().slice(0, 10);
 
   const categories = await fetchCategories();
   const { resultArray, totalPages } = await fetchSpendingPages(startParam, endParam);
