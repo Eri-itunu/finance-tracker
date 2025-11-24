@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { DateRange, DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { addDays, startOfMonth, endOfMonth } from "date-fns";
@@ -60,10 +60,15 @@ export default function DateRangePicker({
         </DialogTrigger>
 
         <DialogContent className="max-w-md rounded-2xl p-6">
-          <DialogTrigger>Select Date Range</DialogTrigger>
+          {/* <DialogTrigger>Select Date Range</DialogTrigger> */}
           {/* <h2 className="text-lg font-semibold text-center mb-4">
             Select Date Range
           </h2> */}
+
+           <DialogHeader>
+            <DialogTitle>Select Dates</DialogTitle>
+            
+          </DialogHeader>
 
           {/* Presets */}
           <div className="grid grid-cols-3 gap-2 mb-4">
