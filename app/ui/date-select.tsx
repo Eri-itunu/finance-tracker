@@ -25,7 +25,7 @@ export default function DateRangePicker({
     const formatted = date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
-      year: "2-digit"
+      year: "numeric"
     });
     return formatted.charAt(0).toUpperCase() + formatted.slice(1);
   }
@@ -54,7 +54,7 @@ export default function DateRangePicker({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <div className="text-purple-600 flex flex-col font-semibold text-lg ">
-            <p>Spending</p>
+            <p>Expenses</p>
             {formatted}
           </div>
         </DialogTrigger>
