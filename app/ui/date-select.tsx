@@ -25,6 +25,7 @@ export default function DateRangePicker({
     const formatted = date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
+      year: "2-digit"
     });
     return formatted.charAt(0).toUpperCase() + formatted.slice(1);
   }

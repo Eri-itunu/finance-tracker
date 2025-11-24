@@ -180,7 +180,7 @@ export async function getSpendingGroupedByDate(
         eq(schema.spending.isDeleted, false)
       )
     )
-    .orderBy(schema.spending.date);
+    .orderBy(desc(schema.spending.date));
 
   const grouped: Record<string, SpendingItem[]> = {};
   rows.forEach((row) => {

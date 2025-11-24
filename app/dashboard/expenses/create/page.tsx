@@ -26,7 +26,7 @@ export default async function Page({
   const amountValue = amount || "0";
 
   return (
-    <main className="overflow-scroll w-full mb-10">
+    <main className="w-full min-h-screen overflow-y-auto">
       {userId ? (
         <Form
           categories={categories}
